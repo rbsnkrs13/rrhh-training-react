@@ -51,77 +51,86 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
                                 Dashboard de Recursos Humanos - v{configuracion.version}
                             </p>
                         </div>
-                        
+
                         <div className="flex space-x-3 mt-4 sm:mt-0">
-                            <button 
+                            <button
                                 onClick={() => setPeriodo('mes')}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    periodo === 'mes' 
-                                        ? 'bg-blue-500 text-white shadow-md' 
+                                className={`px-4 py-2 rounded-lg transition-colors ${periodo === 'mes'
+                                        ? 'bg-blue-500 text-white shadow-md'
                                         : 'bg-white text-gray-700 hover:bg-gray-50'
-                                }`}
+                                    }`}
                             >
                                 📅 Este Mes
                             </button>
-                            <button 
+                            <button
                                 onClick={() => setPeriodo('año')}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    periodo === 'año' 
-                                        ? 'bg-blue-500 text-white shadow-md' 
+                                className={`px-4 py-2 rounded-lg transition-colors ${periodo === 'año'
+                                        ? 'bg-blue-500 text-white shadow-md'
                                         : 'bg-white text-gray-700 hover:bg-gray-50'
-                                }`}
+                                    }`}
                             >
                                 📊 Este Año
                             </button>
-                            
-                            <Link 
+
+                            <Link
                                 href="/empleados"
                                 className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                             >
                                 👥 Gestionar Empleados
                             </Link>
+                            <Link
+                                href={route('logout')}
+                                method="post"
+                                as="button"
+                                className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                                </svg>
+                                Cerrar Sesión
+                            </Link>
                         </div>
                     </div>
-                    
+
                     {/* Grid principal de métricas */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                        <MetricCard 
-                            titulo="Total Empleados" 
-                            valor={totalEmpleados} 
+                        <MetricCard
+                            titulo="Total Empleados"
+                            valor={totalEmpleados}
                             color="blue"
                         />
-                        <MetricCard 
-                            titulo="Empleados Activos" 
-                            valor={empleadosActivos} 
+                        <MetricCard
+                            titulo="Empleados Activos"
+                            valor={empleadosActivos}
                             color="green"
                         />
-                        <MetricCard 
+                        <MetricCard
                             titulo={`Nuevos Contratados (${periodo})`}
-                            valor={metricas.nuevosEmpleados} 
+                            valor={metricas.nuevosEmpleados}
                             color="blue"
                         />
-                        <MetricCard 
-                            titulo="Vacaciones Pendientes" 
-                            valor={metricas.vacacionesPendientes} 
+                        <MetricCard
+                            titulo="Vacaciones Pendientes"
+                            valor={metricas.vacacionesPendientes}
                             color="yellow"
                         />
                     </div>
 
                     {/* Segunda fila de métricas */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                        <MetricCard 
-                            titulo="Empleados Inactivos" 
-                            valor={empleadosInactivos} 
+                        <MetricCard
+                            titulo="Empleados Inactivos"
+                            valor={empleadosInactivos}
                             color="red"
                         />
-                        <MetricCard 
-                            titulo="Cumpleaños Hoy" 
-                            valor={metricas.cumpleanos} 
+                        <MetricCard
+                            titulo="Cumpleaños Hoy"
+                            valor={metricas.cumpleanos}
                             color="yellow"
                         />
-                        <MetricCard 
+                        <MetricCard
                             titulo={`Rotación (${periodo})`}
-                            valor={`${metricas.rotacion}%`} 
+                            valor={`${metricas.rotacion}%`}
                             color="red"
                         />
                     </div>
@@ -139,9 +148,9 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
                                         <span className="text-gray-700">{depto}</span>
                                         <div className="flex items-center">
                                             <div className="w-32 bg-gray-200 rounded-full h-2 mr-3">
-                                                <div 
-                                                    className="bg-blue-500 h-2 rounded-full" 
-                                                    style={{width: `${(count / totalEmpleados) * 100}%`}}
+                                                <div
+                                                    className="bg-blue-500 h-2 rounded-full"
+                                                    style={{ width: `${(count / totalEmpleados) * 100}%` }}
                                                 ></div>
                                             </div>
                                             <span className="font-semibold text-gray-900 w-8 text-right">
@@ -151,7 +160,7 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
                                     </div>
                                 ))}
                             </div>
-                            
+
                             {deptoMayorEmpleados && (
                                 <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                                     <p className="text-sm text-blue-700">
@@ -171,20 +180,20 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
                                     .filter(emp => emp.activo)
                                     .slice(0, 4)
                                     .map(empleado => (
-                                    <div key={empleado.id} className="flex items-center space-x-3 p-3 border border-gray-100 rounded-lg">
-                                        <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                                        <div className="flex-1">
-                                            <p className="font-medium text-gray-900">{empleado.nombre}</p>
-                                            <p className="text-sm text-gray-500">{empleado.departamento}</p>
+                                        <div key={empleado.id} className="flex items-center space-x-3 p-3 border border-gray-100 rounded-lg">
+                                            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                                            <div className="flex-1">
+                                                <p className="font-medium text-gray-900">{empleado.nombre}</p>
+                                                <p className="text-sm text-gray-500">{empleado.departamento}</p>
+                                            </div>
+                                            <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
+                                                Activo
+                                            </span>
                                         </div>
-                                        <span className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-full">
-                                            Activo
-                                        </span>
-                                    </div>
-                                ))}
+                                    ))}
                             </div>
-                            
-                            <Link 
+
+                            <Link
                                 href="/empleados"
                                 className="block mt-4 text-center text-blue-600 hover:text-blue-800 font-medium"
                             >

@@ -16,7 +16,7 @@ Route::get('/', function () {
             'version' => '2.0.0'
         ]
     ]);
-})->name('dashboard');
+})->name('dashboard')->middleware('auth');
 
 // CRUD completo de empleados
-Route::resource('empleados', EmpleadoController::class);
+Route::resource('empleados', EmpleadoController::class)->middleware('auth');
