@@ -17,18 +17,23 @@ class EmpleadoFactory extends Factory
             'Contabilidad' => ['Contador', 'Auditor', 'Controller'],
             'Logística' => ['Operador', 'Supervisor', 'Coordinador']
         ];
-        
+
         $departamento = $this->faker->randomElement($departamentos);
-        
+
+        // Fechas entre enero 2024 y septiembre 2025 (antes de hoy)
+        $fechaContratacion = $this->faker->dateTimeBetween('2024-01-01', '2025-09-01');
+
         return [
             'nombre' => $this->faker->name(),
             'email' => $this->faker->unique()->safeEmail(),
             'departamento' => $departamento,
             'puesto' => $this->faker->randomElement($puestos[$departamento]),
             'salario' => $this->faker->numberBetween(25000, 80000),
-            'fecha_contratacion' => $this->faker->dateTimeBetween('-5 years', 'now'),
-            'activo' => $this->faker->boolean(85), // 85% activos
+            'fecha_contratacion' => $fechaContratacion,
+            'activo' => $this->faker->boolean(85),
             'notas' => $this->faker->optional(0.3)->sentence(),
+            'created_at' => $fechaContratacion,
+            'updated_at' => now(), // Siempre la fecha actual
         ];
     }
 }
