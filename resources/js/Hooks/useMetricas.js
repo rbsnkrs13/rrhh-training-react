@@ -27,6 +27,12 @@ export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado
 
         const ratioRetencion = (empleadosActivosTotal / totalEmpleados) * 100;
 
+        const salarios = empleados.map(e => parseFloat(e.salario)).filter(s => !isNaN(s));
+        const rangoSalarial = salarios.length > 0 ? {
+            min: Math.min(...salarios),
+            max: Math.max(...salarios)
+        } : { min: 0, max: 0 };
+
         return {
             empleadosContratadosMes: empleadosPeriodo.length,
             empleadosActivosTotal,
@@ -34,7 +40,8 @@ export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado
             totalEmpleados,
             promedioAntiguedad,
             promedioSalarial,
-            ratioRetencion
+            ratioRetencion,
+            rangoSalarial
         };
     }, [empleados, añoSeleccionado, mesSeleccionado]);
 

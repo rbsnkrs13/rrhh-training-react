@@ -1,15 +1,7 @@
 import MetricCard from "@/Components/MetricCard";
-import { useMemo } from 'react';
+import { useMemo } from 'react'; 
 
 export default function MetricasSecundarias({ metricas }) {
-    // useMemo para cálculos derivados - evita recalcular en cada render
-    const rangoSalarial = useMemo(() => {
-        const salarios = empleados.map(e => parseFloat(e.salario)).filter(s => !isNaN(s));
-        const min = Math.min(...salarios);
-        const max = Math.max(...salarios);
-        return `${Math.round(min).toLocaleString()}-${Math.round(max).toLocaleString()}`;
-    }, [empleados]);
-
     const estadoRetencion = useMemo(() => {
         if (metricas.ratioRetencion >= 85) return { texto: "Excelente", color: "green" };
         if (metricas.ratioRetencion >= 70) return { texto: "Bueno", color: "yellow" };
@@ -32,7 +24,7 @@ export default function MetricasSecundarias({ metricas }) {
             />
             <MetricCard
                 titulo="Distribución Salarial"
-                valor={`€${rangoSalarial}`}
+                valor={`€${Math.round(metricas.rangoSalarial.min).toLocaleString()}-${Math.round(metricas.rangoSalarial.max).toLocaleString()}`}
                 color="green"
                 subtitulo="Rango salarial"
             />

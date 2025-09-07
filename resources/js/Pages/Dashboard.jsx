@@ -96,7 +96,6 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
                     {/* Métricas secundarias */}
                     <MetricasSecundarias
                         metricas={metricas}
-                        empleados={empleados}
                     />
 
                     {/* Sección departamentos */}
