@@ -12,7 +12,7 @@ Route::get('/', function () {
     return Inertia::render('Dashboard', [
         'empleadosIniciales' => $empleados,
         'configuracion' => [
-            'empresa' => 'Mi Empresa RRHH',
+            'empresa' => 'RRHH',
             'version' => '2.0.0'
         ]
     ]);

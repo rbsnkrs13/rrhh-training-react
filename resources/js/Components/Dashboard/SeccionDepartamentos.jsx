@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { useMemo, useCallback } from 'react';
 
+// Componente para la sección de departamentos y empleados recientes en el dashboard
 export default function SeccionDepartamentos({ 
     departamentos, 
     deptoMayorEmpleados, 

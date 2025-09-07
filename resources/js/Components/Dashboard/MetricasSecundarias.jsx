@@ -1,6 +1,8 @@
 import MetricCard from "@/Components/MetricCard";
 import { useMemo } from 'react'; 
 
+// Importa MetricCard para mostrar cada métrica
+// Recibe metricas, estados de carga y selección de período desde el componente padre (Dashboard)
 export default function MetricasSecundarias({ metricas }) {
     const estadoRetencion = useMemo(() => {
         if (metricas.ratioRetencion >= 85) return { texto: "Excelente", color: "green" };
@@ -10,6 +12,7 @@ export default function MetricasSecundarias({ metricas }) {
 
     return (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            {/* Tarjetas que se insertan en dashboard que se componen de 5 variables para que se puedan pintar y mostrar los datos vayamos a mostrar */}
             <MetricCard
                 titulo="Empleados Inactivos"
                 valor={metricas.empleadosInactivosTotal}

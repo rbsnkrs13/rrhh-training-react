@@ -1,6 +1,9 @@
 import { useState, useMemo, useCallback } from 'react';
 
+// Hook personalizado para calcular métricas clave de empleados
+// Recibe empleados, año y mes seleccionados para filtrar y calcular métricas
 export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado) {
+    // Estado para manejar carga simulada de métricas
     const [cargandoMetricas, setCargandoMetricas] = useState(false);
 
     // useMemo optimiza cálculos pesados - solo recalcula si cambian las dependencias
@@ -11,6 +14,7 @@ export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado
                 fechaContratacion.getMonth() + 1 === mesSeleccionado;
         });
 
+        // Cálculos de métricas clave, cantidad de empleados activos/inactivos, media de antiguedad y salario, ratio de retención, rango salarial
         const empleadosActivosTotal = empleados.filter(emp => emp.activo).length;
         const empleadosInactivosTotal = empleados.filter(emp => !emp.activo).length;
         const totalEmpleados = empleados.length;
@@ -33,6 +37,7 @@ export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado
             max: Math.max(...salarios)
         } : { min: 0, max: 0 };
 
+        // Devuelve todas las métricas calculadas
         return {
             empleadosContratadosMes: empleadosPeriodo.length,
             empleadosActivosTotal,
@@ -45,7 +50,7 @@ export default function useMetricas(empleados, añoSeleccionado, mesSeleccionado
         };
     }, [empleados, añoSeleccionado, mesSeleccionado]);
 
-    // useCallback optimiza funciones - evita recrearlas en cada render
+    // Función para simular carga de métricas con useCallback para evitar recreación innecesaria
     const simularCarga = useCallback(() => {
         setCargandoMetricas(true);
         const timer = setTimeout(() => {

@@ -1,14 +1,15 @@
 import { Link } from '@inertiajs/react';
 
-export default function HeaderConFiltros({ 
-    configuracion, 
-    añoSeleccionado, 
-    setAñoSeleccionado, 
-    mesSeleccionado, 
-    setMesSeleccionado, 
-    añosCompletos, 
-    meses 
-}) {
+//Exporta el componente HeaderConFiltros con sus props usadas aqui
+export default function HeaderConFiltros({
+    configuracion,
+    añoSeleccionado,
+    setAñoSeleccionado,
+    mesSeleccionado,
+    setMesSeleccionado,
+    añosCompletos,
+    meses
+}) {//Y sus styles para los selects (bendita ia)
     const selectStyles = {
         className: "px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer",
         style: {
@@ -19,11 +20,12 @@ export default function HeaderConFiltros({
         }
     };
 
+    //Render del componente
     return (
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
             <div>
                 <h1 className="text-3xl font-bold text-gray-900">
-                    🎯 {configuracion.empresa}
+                    🎯 {configuracion.empresa}  {/* Configuracion que viene de web, sacamos el nombre y la version  */}
                 </h1>
                 <p className="text-gray-600 mt-1">
                     Dashboard de Recursos Humanos - v{configuracion.version}
@@ -31,6 +33,7 @@ export default function HeaderConFiltros({
             </div>
 
             <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-0">
+                {/* Select para seleccionar un año, viene de hooks/usePeriodos */}
                 <select
                     value={añoSeleccionado}
                     onChange={(e) => setAñoSeleccionado(parseInt(e.target.value))}
@@ -43,6 +46,7 @@ export default function HeaderConFiltros({
                     ))}
                 </select>
 
+                {/* Select para seleccionar un año, viene de hooks/usePeriodos */}
                 <select
                     value={mesSeleccionado}
                     onChange={(e) => setMesSeleccionado(parseInt(e.target.value))}
@@ -55,6 +59,7 @@ export default function HeaderConFiltros({
                     ))}
                 </select>
 
+                {/* Link para ir a la pagina de empleados */}
                 <Link
                     href="/empleados"
                     className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"

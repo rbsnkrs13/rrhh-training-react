@@ -1,3 +1,4 @@
+// Componente reutilizable para mostrar una tarjeta de métrica con título, valor, color, subtítulo y animación opcional que solo se muestra cuando 
 export default function MetricCard({ titulo, valor, color = 'blue', subtitulo, animacion = false }) {
     const colores = {
         blue: 'bg-blue-50 border-blue-200 text-blue-700',
@@ -8,6 +9,7 @@ export default function MetricCard({ titulo, valor, color = 'blue', subtitulo, a
         gray: 'bg-gray-50 border-gray-200 text-gray-700'
     };
 
+    //render de la tarjeta con claseis dinamicas segun el color que se les pase, y animacion si es true
     return (
         <div className={`p-6 rounded-lg border-2 ${colores[color]} transition-all duration-300 hover:scale-105 ${animacion ? 'animate-pulse' : ''}`}>
             <div className="flex items-center justify-between">

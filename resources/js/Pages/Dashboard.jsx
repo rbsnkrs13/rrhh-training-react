@@ -10,11 +10,10 @@ import MetricasSecundarias from '@/Components/Dashboard/MetricasSecundarias';
 import SeccionDepartamentos from '@/Components/Dashboard/SeccionDepartamentos';
 
 export default function Dashboard({ empleadosIniciales, configuracion }) { //Datos importados de web.php
-    // Estado para el período seleccionado que despues se usaran en los botones
-    const [empleados] = useState(empleadosIniciales); //Viene de web.php 
-    // Estados para efectos visuales
-    const [animacionActiva, setAnimacionActiva] = useState(false);
+    const [empleados] = useState(empleadosIniciales); // lista de empleados, no cambia, solo para cálculos
+    const [animacionActiva, setAnimacionActiva] = useState(false); // Estados para efectos visuales en este caso cuando cambian las métricas
 
+    // hooks de usePeriodos, useMetricas y useDepartamentos, traerte el return de cada una para usarlas
     const {
         añoSeleccionado,
         mesSeleccionado,
@@ -24,24 +23,27 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
         añosCompletos
     } = usePeriodos(empleados);
 
-    const { metricas, cargandoMetricas, simularCarga } = useMetricas(
-        empleados,
-        añoSeleccionado,
-        mesSeleccionado
-    );
+    const { 
+        metricas,
+        cargandoMetricas, 
+        simularCarga 
+    } = useMetricas(empleados,añoSeleccionado,mesSeleccionado);
 
     const { departamentos, deptoMayorEmpleados } = useDepartamentos(empleados);
 
 
     // useEffect optimizado - solo maneja animaciones
     useEffect(() => {
+        //Activa animacion y simula carga(useMetricas)
         setAnimacionActiva(true);
         const cleanup = simularCarga();
 
+        //Temporizador para desactivar animacion despues de 300ms
         const timer = setTimeout(() => {
             setAnimacionActiva(false);
         }, 300);
 
+        //Refresca temporizador y limpieza de carga si cambian año o mes para optimizacion
         return () => {
             clearTimeout(timer);
             if (cleanup) cleanup();
@@ -68,6 +70,8 @@ export default function Dashboard({ empleadosIniciales, configuracion }) { //Dat
         }
     }, [metricas, cargandoMetricas, añoSeleccionado, mesSeleccionado, meses]);
 
+
+    //Render del dashboard
     return (
         <div className="min-h-screen bg-gray-100">
             <div className="py-8">
