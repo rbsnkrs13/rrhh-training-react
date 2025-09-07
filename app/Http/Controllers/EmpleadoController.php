@@ -8,6 +8,7 @@ use Inertia\Inertia;
 
 class EmpleadoController extends Controller
 {
+    //Busca y filtra empleados, con paginación y ordenamiento
     public function index(Request $request)
     {
         $query = Empleado::query();
@@ -51,11 +52,13 @@ class EmpleadoController extends Controller
         ]);
     }
 
+    // Formulario para crear un nuevo empleado
     public function create()
     {
         return Inertia::render('CrearEmpleado');
     }
 
+    // Almacena un nuevo empleado en la base de datos validando los datos recibidos
     public function store(Request $request)
     {
         $datos = $request->validate([
@@ -78,6 +81,7 @@ class EmpleadoController extends Controller
             ->with('success', '✅ Empleado "' . $datos['nombre'] . '" creado exitosamente');
     }
 
+    // Muestra los detalles de un empleado específico
     public function show(Empleado $empleado)
     {
         return Inertia::render('VerEmpleado', [
@@ -85,6 +89,7 @@ class EmpleadoController extends Controller
         ]);
     }
 
+    // Formulario para editar un empleado existente
     public function edit(Empleado $empleado)
     {
         return Inertia::render('EditarEmpleado', [
@@ -92,6 +97,7 @@ class EmpleadoController extends Controller
         ]);
     }
 
+    // Actualiza un empleado existente en la base de datos validando los datos recibidos
     public function update(Request $request, Empleado $empleado)
     {
         $datos = $request->validate([
@@ -111,6 +117,7 @@ class EmpleadoController extends Controller
             ->with('success', '✅ Empleado "' . $datos['nombre'] . '" actualizado exitosamente');
     }
 
+    // Elimina un empleado de la base de datos
     public function destroy(Empleado $empleado)
     {
         $nombre = $empleado->nombre;

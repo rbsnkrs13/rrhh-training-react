@@ -1,0 +1,67 @@
+import { Link } from '@inertiajs/react';
+
+export default function HeaderConFiltros({ 
+    configuracion, 
+    añoSeleccionado, 
+    setAñoSeleccionado, 
+    mesSeleccionado, 
+    setMesSeleccionado, 
+    añosCompletos, 
+    meses 
+}) {
+    const selectStyles = {
+        className: "px-4 py-2 pr-8 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white appearance-none cursor-pointer",
+        style: {
+            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e")`,
+            backgroundPosition: 'right 0.5rem center',
+            backgroundRepeat: 'no-repeat',
+            backgroundSize: '1.5em 1.5em'
+        }
+    };
+
+    return (
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8">
+            <div>
+                <h1 className="text-3xl font-bold text-gray-900">
+                    🎯 {configuracion.empresa}
+                </h1>
+                <p className="text-gray-600 mt-1">
+                    Dashboard de Recursos Humanos - v{configuracion.version}
+                </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3 mt-4 sm:mt-0">
+                <select
+                    value={añoSeleccionado}
+                    onChange={(e) => setAñoSeleccionado(parseInt(e.target.value))}
+                    {...selectStyles}
+                >
+                    {añosCompletos.map(año => (
+                        <option key={año} value={año}>
+                            📅 {año}
+                        </option>
+                    ))}
+                </select>
+
+                <select
+                    value={mesSeleccionado}
+                    onChange={(e) => setMesSeleccionado(parseInt(e.target.value))}
+                    {...selectStyles}
+                >
+                    {meses.map(mes => (
+                        <option key={mes.valor} value={mes.valor}>
+                            {mes.nombre}
+                        </option>
+                    ))}
+                </select>
+
+                <Link
+                    href="/empleados"
+                    className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
+                >
+                    👥 Gestionar Empleados
+                </Link>
+            </div>
+        </div>
+    );
+}

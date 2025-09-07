@@ -1,16 +1,31 @@
-//Vista creada para las tarjetas de metricas
-export default function MetricCard({ titulo, valor, color = "blue" }) {
-    const colorClasses = {
-        blue: "text-blue-600",
-        green: "text-green-600", 
-        red: "text-red-600",
-        yellow: "text-yellow-600"
+export default function MetricCard({ titulo, valor, color = 'blue', subtitulo, animacion = false }) {
+    const colores = {
+        blue: 'bg-blue-50 border-blue-200 text-blue-700',
+        green: 'bg-green-50 border-green-200 text-green-700',
+        yellow: 'bg-yellow-50 border-yellow-200 text-yellow-700',
+        red: 'bg-red-50 border-red-200 text-red-700',
+        purple: 'bg-purple-50 border-purple-200 text-purple-700',
+        gray: 'bg-gray-50 border-gray-200 text-gray-700'
     };
 
     return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <h3 className="text-lg font-semibold text-gray-900">{titulo}</h3>
-            <p className={`text-3xl font-bold ${colorClasses[color]}`}>{valor}</p>
+        <div className={`p-6 rounded-lg border-2 ${colores[color]} transition-all duration-300 hover:scale-105 ${animacion ? 'animate-pulse' : ''}`}>
+            <div className="flex items-center justify-between">
+                <div className="flex-1">
+                    <p className="text-sm font-medium opacity-75">{titulo}</p>
+                    <p className={`text-2xl font-bold mt-1 transition-colors duration-300 ${valor === "..." ? 'text-gray-400' : ''}`}>
+                        {valor}
+                    </p>
+                    {subtitulo && (
+                        <p className="text-xs opacity-60 mt-1">{subtitulo}</p>
+                    )}
+                </div>
+                {animacion && (
+                    <div className="ml-3">
+                        <div className="animate-spin rounded-full h-6 w-6 border-2 border-current border-t-transparent opacity-50"></div>
+                    </div>
+                )}
+            </div>
         </div>
     );
 }
