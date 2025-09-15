@@ -1,9 +1,14 @@
 import MetricCard from "@/Components/MetricCard";
-import { useMemo } from 'react'; 
+import { useMemo } from 'react';
+import type { Metricas } from '@/types';
+
+interface MetricasSecundariasProps {
+    metricas: Metricas;
+}
 
 // Importa MetricCard para mostrar cada métrica
 // Recibe metricas, estados de carga y selección de período desde el componente padre (Dashboard)
-export default function MetricasSecundarias({ metricas }) {
+export default function MetricasSecundarias({ metricas }: MetricasSecundariasProps) {
     const estadoRetencion = useMemo(() => {
         if (metricas.ratioRetencion >= 85) return { texto: "Excelente", color: "green" };
         if (metricas.ratioRetencion >= 70) return { texto: "Bueno", color: "yellow" };

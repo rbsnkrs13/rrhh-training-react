@@ -1,13 +1,21 @@
 import { Link } from '@inertiajs/react';
 import { useMemo, useCallback } from 'react';
+import type { Empleado } from '@/types';
+
+interface SeccionDepartamentosProps {
+    departamentos: Record<string, number>;
+    deptoMayorEmpleados: [string, number];
+    empleados: Empleado[];
+    totalEmpleados: number;
+}
 
 // Componente para la sección de departamentos y empleados recientes en el dashboard
-export default function SeccionDepartamentos({ 
-    departamentos, 
-    deptoMayorEmpleados, 
-    empleados, 
-    totalEmpleados 
-}) {
+export default function SeccionDepartamentos({
+    departamentos,
+    deptoMayorEmpleados,
+    empleados,
+    totalEmpleados
+}: SeccionDepartamentosProps) {
     // useMemo para empleados activos - evita filtrar en cada render
     const empleadosActivosRecientes = useMemo(() => {
         return empleados
@@ -16,7 +24,7 @@ export default function SeccionDepartamentos({
     }, [empleados]);
 
     // useCallback para función de cálculo de porcentaje - evita recrear función
-    const calcularPorcentaje = useCallback((count) => {
+    const calcularPorcentaje = useCallback((count: number) => {
         return (count / totalEmpleados) * 100;
     }, [totalEmpleados]);
 
@@ -70,7 +78,13 @@ export default function SeccionDepartamentos({
 }
 
 // Componentes internos para mejor legibilidad
-function BarraDepartamento({ departamento, count, porcentaje }) {
+interface BarraDepartamentoProps {
+    departamento: string;
+    count: number;
+    porcentaje: number;
+}
+
+function BarraDepartamento({ departamento, count, porcentaje }: BarraDepartamentoProps) {
     return (
         <div className="flex items-center justify-between">
             <span className="text-gray-700">{departamento}</span>
@@ -89,7 +103,11 @@ function BarraDepartamento({ departamento, count, porcentaje }) {
     );
 }
 
-function EmpleadoItem({ empleado }) {
+interface EmpleadoItemProps {
+    empleado: Empleado;
+}
+
+function EmpleadoItem({ empleado }: EmpleadoItemProps) {
     return (
         <div className="flex items-center space-x-3 p-3 border border-gray-100 rounded-lg hover:bg-gray-50 transition-colors">
             <div className="w-2 h-2 bg-green-400 rounded-full" />

@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 
-export default function FlashMessage({ message, type = 'success' }) {
+interface FlashMessageProps {
+  message: string;
+  type?: 'success' | 'error' | 'warning';
+}
+
+export default function FlashMessage({ message, type = 'success' }: FlashMessageProps) {
     const [visible, setVisible] = useState(true); // Estado para controlar la visibilidad del mensaje
 
     //Cada vez que llega un mensaje, se muestra y se oculta despues de 5 segundos
@@ -24,7 +29,7 @@ export default function FlashMessage({ message, type = 'success' }) {
     };
 
     return (
-        <div className={`border px-4 py-3 rounded mb-4 ${styles[type]}`}>
+        <div className={`border px-4 py-3 rounded mb-4 ${styles[type as keyof typeof styles]}`}>
             <div className="flex justify-between items-center">
                 <span>{message}</span>
                 <button 

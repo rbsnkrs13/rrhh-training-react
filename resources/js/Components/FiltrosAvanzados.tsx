@@ -1,20 +1,26 @@
 import { useState } from 'react';
+import type { Filtros } from '@/types';
 
-export default function FiltroAvanzado({ onFiltroChange, departamentos }) {
-    const [filtros, setFiltros] = useState({
+interface FiltroAvanzadoProps {
+  onFiltroChange: (filtros: Filtros) => void;
+  departamentos: string[];
+}
+
+export default function FiltroAvanzado({ onFiltroChange, departamentos }: FiltroAvanzadoProps) {
+    const [filtros, setFiltros] = useState<Filtros>({
         busqueda: '',
         departamento: 'todos',
         estado: 'todos',
         ordenPor: 'nombre'
     });
 
-    const aplicarFiltro = (nuevosFiltros) => {
+    const aplicarFiltro = (nuevosFiltros: Filtros) => {
         setFiltros(nuevosFiltros);
         onFiltroChange(nuevosFiltros);
     };
 
     const limpiarFiltros = () => {
-        const filtrosLimpios = {
+        const filtrosLimpios: Filtros = {
             busqueda: '',
             departamento: 'todos',
             estado: 'todos',

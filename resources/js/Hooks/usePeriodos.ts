@@ -1,14 +1,15 @@
 import { useState, useMemo } from 'react';
+import type { Empleado, Mes, UsePeriodosReturn } from '@/types';
 
 // Hook personalizado para manejar selección de períodos (año y mes)
 //Recibe empleados para calcular años disponibles y exportar funciones y estados
-export default  function usePeriodos(empleados) {
+export default function usePeriodos(empleados: Empleado[]): UsePeriodosReturn {
     // Estados para año y mes seleccionados, inicializados al año y mes actual
-    const [añoSeleccionado, setAñoSeleccionado] = useState(new Date().getFullYear());
-    const [mesSeleccionado, setMesSeleccionado] = useState(new Date().getMonth() + 1);
+    const [añoSeleccionado, setAñoSeleccionado] = useState<number>(new Date().getFullYear());
+    const [mesSeleccionado, setMesSeleccionado] = useState<number>(new Date().getMonth() + 1);
 
     // Lista fija de meses para el selector
-    const meses = [
+    const meses: Mes[] = [
         { valor: 1, nombre: 'Enero' }, { valor: 2, nombre: 'Febrero' },
         { valor: 3, nombre: 'Marzo' }, { valor: 4, nombre: 'Abril' },
         { valor: 5, nombre: 'Mayo' }, { valor: 6, nombre: 'Junio' },
@@ -18,7 +19,7 @@ export default  function usePeriodos(empleados) {
     ];
 
     // useMemo para calcular años completos disponibles en los datos de empleados, evitando recálculos innecesarios ya que empleados no cambia
-    const añosCompletos = useMemo(() => {
+    const añosCompletos = useMemo<number[]>(() => {
         // Extrae años únicos de las fechas de contratación de los empleados
         const añosDisponibles = [...new Set(empleados.map(emp =>
             new Date(emp.fecha_contratacion).getFullYear()

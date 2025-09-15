@@ -1,14 +1,25 @@
 import MetricCard from "@/Components/MetricCard";
+import type { Metricas, Mes } from '@/types';
+
+interface MetricasPrincipalesProps {
+    metricas: Metricas;
+    cargandoMetricas: boolean;
+    animacionActiva: boolean;
+    mesSeleccionado: number;
+    añoSeleccionado: number;
+    meses: Mes[];
+}
+
 // Importa MetricCard para mostrar cada métrica
 // Recibe metricas, estados de carga y selección de período desde el componente padre (Dashboard)
-export default function MetricasPrincipales({ 
-    metricas, 
-    cargandoMetricas, 
-    animacionActiva, 
-    mesSeleccionado, 
-    añoSeleccionado, 
-    meses 
-}) {
+export default function MetricasPrincipales({
+    metricas,
+    cargandoMetricas,
+    animacionActiva,
+    mesSeleccionado,
+    añoSeleccionado,
+    meses
+}: MetricasPrincipalesProps) {
     // Render de las tarjetas de métricas principales
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">

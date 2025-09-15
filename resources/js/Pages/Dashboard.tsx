@@ -1,6 +1,4 @@
-import MetricCard from "@/Components/MetricCard";
 import { useState, useEffect } from 'react';
-import { Link } from '@inertiajs/react';
 import useMetricas from '@/Hooks/useMetricas';
 import useDepartamentos from '@/Hooks/useDepartamentos';
 import usePeriodos from '@/Hooks/usePeriodos';
@@ -8,8 +6,9 @@ import HeaderConFiltros from '@/Components/Dashboard/HeaderConFiltros';
 import MetricasPrincipales from '@/Components/Dashboard/MetricasPrincipales';
 import MetricasSecundarias from '@/Components/Dashboard/MetricasSecundarias';
 import SeccionDepartamentos from '@/Components/Dashboard/SeccionDepartamentos';
+import type { DashboardProps } from '@/types';
 
-export default function Dashboard({ empleadosIniciales, configuracion }) { //Datos importados de web.php
+export default function Dashboard({ empleadosIniciales, configuracion }: DashboardProps) { //Datos importados de web.php
     const [empleados] = useState(empleadosIniciales); // lista de empleados, no cambia, solo para cálculos
     const [animacionActiva, setAnimacionActiva] = useState(false); // Estados para efectos visuales en este caso cuando cambian las métricas
 

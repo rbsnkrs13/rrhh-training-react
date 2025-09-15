@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { Link, usePage } from '@inertiajs/react';
 import FlashMessage from '@/Components/FlashMessage';
 import FiltroAvanzado from '@/Components/FiltrosAvanzados';
+import type { EmpleadosProps, Filtros, PageProps } from '@/types';
 
-export default function Empleados({ empleados }) {
-    const { flash } = usePage().props;
-    const [expandidos, setExpandidos] = useState({});
+export default function Empleados({ empleados }: EmpleadosProps) {
+    const { flash } = usePage<PageProps>().props;
+    const [expandidos, setExpandidos] = useState<Record<number, boolean>>({});
 
-    const [filtros, setFiltros] = useState({
+    const [filtros, setFiltros] = useState<Filtros>({
         busqueda: '',
         departamento: 'todos',
         estado: 'todos',
