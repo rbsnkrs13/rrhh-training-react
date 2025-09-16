@@ -10,27 +10,35 @@ export default function usePeriodos(empleados: Empleado[]): UsePeriodosReturn {
 
     // Lista fija de meses para el selector
     const meses: Mes[] = [
-        { valor: 1, nombre: 'Enero' }, { valor: 2, nombre: 'Febrero' },
-        { valor: 3, nombre: 'Marzo' }, { valor: 4, nombre: 'Abril' },
-        { valor: 5, nombre: 'Mayo' }, { valor: 6, nombre: 'Junio' },
-        { valor: 7, nombre: 'Julio' }, { valor: 8, nombre: 'Agosto' },
-        { valor: 9, nombre: 'Septiembre' }, { valor: 10, nombre: 'Octubre' },
-        { valor: 11, nombre: 'Noviembre' }, { valor: 12, nombre: 'Diciembre' }
+        { valor: 1, nombre: 'Enero' },
+        { valor: 2, nombre: 'Febrero' },
+        { valor: 3, nombre: 'Marzo' },
+        { valor: 4, nombre: 'Abril' },
+        { valor: 5, nombre: 'Mayo' },
+        { valor: 6, nombre: 'Junio' },
+        { valor: 7, nombre: 'Julio' },
+        { valor: 8, nombre: 'Agosto' },
+        { valor: 9, nombre: 'Septiembre' },
+        { valor: 10, nombre: 'Octubre' },
+        { valor: 11, nombre: 'Noviembre' },
+        { valor: 12, nombre: 'Diciembre' },
     ];
 
     // useMemo para calcular años completos disponibles en los datos de empleados, evitando recálculos innecesarios ya que empleados no cambia
     const añosCompletos = useMemo<number[]>(() => {
         // Extrae años únicos de las fechas de contratación de los empleados
-        const añosDisponibles = [...new Set(empleados.map(emp =>
-            new Date(emp.fecha_contratacion).getFullYear()
-        ))].sort((a, b) => b - a);
+        const añosDisponibles = [
+            ...new Set(empleados.map(emp => new Date(emp.fecha_contratacion).getFullYear())),
+        ].sort((a, b) => b - a);
 
         // Asegura que el año actual y el siguiente siempre estén incluidos
-        return [...new Set([
-            ...añosDisponibles,
-            new Date().getFullYear(),
-            new Date().getFullYear() + 1
-        ])].sort((a, b) => b - a);
+        return [
+            ...new Set([
+                ...añosDisponibles,
+                new Date().getFullYear(),
+                new Date().getFullYear() + 1,
+            ]),
+        ].sort((a, b) => b - a);
     }, [empleados]);
 
     //Devuelve estados y funciones para poder manejarlos en dashboard y header de filtros
@@ -40,6 +48,6 @@ export default function usePeriodos(empleados: Empleado[]): UsePeriodosReturn {
         setAñoSeleccionado,
         setMesSeleccionado,
         meses,
-        añosCompletos
+        añosCompletos,
     };
 }

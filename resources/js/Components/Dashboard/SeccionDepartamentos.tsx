@@ -14,19 +14,20 @@ export default function SeccionDepartamentos({
     departamentos,
     deptoMayorEmpleados,
     empleados,
-    totalEmpleados
+    totalEmpleados,
 }: SeccionDepartamentosProps) {
     // useMemo para empleados activos - evita filtrar en cada render
     const empleadosActivosRecientes = useMemo(() => {
-        return empleados
-            .filter(emp => emp.activo)
-            .slice(0, 4);
+        return empleados.filter(emp => emp.activo).slice(0, 4);
     }, [empleados]);
 
     // useCallback para función de cálculo de porcentaje - evita recrear función
-    const calcularPorcentaje = useCallback((count: number) => {
-        return (count / totalEmpleados) * 100;
-    }, [totalEmpleados]);
+    const calcularPorcentaje = useCallback(
+        (count: number) => {
+            return (count / totalEmpleados) * 100;
+        },
+        [totalEmpleados]
+    );
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -49,7 +50,8 @@ export default function SeccionDepartamentos({
                 {deptoMayorEmpleados && (
                     <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                         <p className="text-sm text-blue-700">
-                            🏆 <strong>{deptoMayorEmpleados[0]}</strong> es el departamento con más empleados ({deptoMayorEmpleados[1]})
+                            🏆 <strong>{deptoMayorEmpleados[0]}</strong> es el departamento con más
+                            empleados ({deptoMayorEmpleados[1]})
                         </p>
                     </div>
                 )}
@@ -95,9 +97,7 @@ function BarraDepartamento({ departamento, count, porcentaje }: BarraDepartament
                         style={{ width: `${porcentaje}%` }}
                     />
                 </div>
-                <span className="font-semibold text-gray-900 w-8 text-right">
-                    {count}
-                </span>
+                <span className="font-semibold text-gray-900 w-8 text-right">{count}</span>
             </div>
         </div>
     );

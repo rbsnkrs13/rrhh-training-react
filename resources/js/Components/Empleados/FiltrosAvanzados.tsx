@@ -2,8 +2,8 @@ import { useState } from 'react';
 import type { Filtros } from '@/types';
 
 interface FiltroAvanzadoProps {
-  onFiltroChange: (filtros: Filtros) => void;
-  departamentos: string[];
+    onFiltroChange: (filtros: Filtros) => void;
+    departamentos: string[];
 }
 
 export default function FiltroAvanzado({ onFiltroChange, departamentos }: FiltroAvanzadoProps) {
@@ -11,7 +11,7 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
         busqueda: '',
         departamento: 'todos',
         estado: 'todos',
-        ordenPor: 'nombre'
+        ordenPor: 'nombre',
     });
 
     const aplicarFiltro = (nuevosFiltros: Filtros) => {
@@ -24,7 +24,7 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
             busqueda: '',
             departamento: 'todos',
             estado: 'todos',
-            ordenPor: 'nombre'
+            ordenPor: 'nombre',
         };
         aplicarFiltro(filtrosLimpios);
     };
@@ -40,7 +40,7 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
                     🗑️ Limpiar filtros
                 </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Búsqueda por nombre */}
                 <div>
@@ -51,7 +51,7 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
                         type="text"
                         placeholder="Nombre del empleado..."
                         value={filtros.busqueda}
-                        onChange={(e) => aplicarFiltro({...filtros, busqueda: e.target.value})}
+                        onChange={e => aplicarFiltro({ ...filtros, busqueda: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
                 </div>
@@ -63,13 +63,22 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
                     </label>
                     <select
                         value={filtros.departamento}
-                        onChange={(e) => aplicarFiltro({...filtros, departamento: e.target.value})}
+                        onChange={e => aplicarFiltro({ ...filtros, departamento: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="todos">📋 Todos los departamentos</option>
                         {departamentos.map(dept => (
                             <option key={dept} value={dept}>
-                                {dept === 'IT' ? '💻' : dept === 'RRHH' ? '👥' : dept === 'Ventas' ? '💰' : dept === 'Marketing' ? '📢' : '📊'} {dept}
+                                {dept === 'IT'
+                                    ? '💻'
+                                    : dept === 'RRHH'
+                                      ? '👥'
+                                      : dept === 'Ventas'
+                                        ? '💰'
+                                        : dept === 'Marketing'
+                                          ? '📢'
+                                          : '📊'}{' '}
+                                {dept}
                             </option>
                         ))}
                     </select>
@@ -77,12 +86,10 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
 
                 {/* Filtro por estado */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Estado
-                    </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Estado</label>
                     <select
                         value={filtros.estado}
-                        onChange={(e) => aplicarFiltro({...filtros, estado: e.target.value})}
+                        onChange={e => aplicarFiltro({ ...filtros, estado: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="todos">👥 Todos los empleados</option>
@@ -98,7 +105,7 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
                     </label>
                     <select
                         value={filtros.ordenPor}
-                        onChange={(e) => aplicarFiltro({...filtros, ordenPor: e.target.value})}
+                        onChange={e => aplicarFiltro({ ...filtros, ordenPor: e.target.value })}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="nombre">📝 Nombre (A-Z)</option>
@@ -110,12 +117,15 @@ export default function FiltroAvanzado({ onFiltroChange, departamentos }: Filtro
             </div>
 
             {/* Resumen de filtros activos */}
-            {(filtros.busqueda || filtros.departamento !== 'todos' || filtros.estado !== 'todos') && (
+            {(filtros.busqueda ||
+                filtros.departamento !== 'todos' ||
+                filtros.estado !== 'todos') && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-lg">
                     <p className="text-sm text-blue-700">
                         🔍 <strong>Filtros activos:</strong>
                         {filtros.busqueda && ` Búsqueda: "${filtros.busqueda}"`}
-                        {filtros.departamento !== 'todos' && ` | Departamento: ${filtros.departamento}`}
+                        {filtros.departamento !== 'todos' &&
+                            ` | Departamento: ${filtros.departamento}`}
                         {filtros.estado !== 'todos' && ` | Estado: ${filtros.estado}`}
                     </p>
                 </div>

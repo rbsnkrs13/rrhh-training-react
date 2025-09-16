@@ -1,9 +1,9 @@
 import { useForm, Link, usePage } from '@inertiajs/react';
-import FlashMessage from '../Components/FlashMessage';
+import FlashMessage from '@/Components/Common/FlashMessage';
 
 export default function CrearEmpleado() {
     const { flash } = usePage().props;
-    
+
     const { data, setData, post, processing, errors } = useForm({
         nombre: '',
         email: '',
@@ -12,27 +12,27 @@ export default function CrearEmpleado() {
         salario: '',
         fecha_contratacion: '',
         activo: true,
-        notas: ''
+        notas: '',
     });
 
     const departamentos = ['IT', 'RRHH', 'Ventas', 'Marketing', 'Contabilidad', 'Logística'];
-    
+
     const puestos = {
-        'IT': ['Desarrollador', 'Analista', 'DevOps', 'QA Tester', 'Arquitecto'],
-        'RRHH': ['Especialista RRHH', 'Recruiter', 'Nóminas', 'Formación'],
-        'Ventas': ['Vendedor', 'Account Manager', 'Comercial', 'Preventa'],
-        'Marketing': ['Marketing Manager', 'Community Manager', 'Diseñador', 'SEO'],
-        'Contabilidad': ['Contador', 'Auditor', 'Controller', 'Tesorería'],
-        'Logística': ['Operador', 'Supervisor', 'Coordinador', 'Almacén']
+        IT: ['Desarrollador', 'Analista', 'DevOps', 'QA Tester', 'Arquitecto'],
+        RRHH: ['Especialista RRHH', 'Recruiter', 'Nóminas', 'Formación'],
+        Ventas: ['Vendedor', 'Account Manager', 'Comercial', 'Preventa'],
+        Marketing: ['Marketing Manager', 'Community Manager', 'Diseñador', 'SEO'],
+        Contabilidad: ['Contador', 'Auditor', 'Controller', 'Tesorería'],
+        Logística: ['Operador', 'Supervisor', 'Coordinador', 'Almacén'],
     };
 
-    const enviarFormulario = (e) => {
+    const enviarFormulario = e => {
         e.preventDefault();
-        
+
         post(route('empleados.store'), {
             onSuccess: () => {
                 console.log('✅ Empleado creado en BD');
-            }
+            },
         });
     };
 
@@ -42,13 +42,13 @@ export default function CrearEmpleado() {
                 <div className="max-w-2xl mx-auto px-4">
                     {flash?.success && <FlashMessage message={flash.success} type="success" />}
                     {flash?.error && <FlashMessage message={flash.error} type="error" />}
-                    
+
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">
                             ➕ Crear Nuevo Empleado
                         </h1>
-                        
-                        <Link 
+
+                        <Link
                             href={route('empleados.index')}
                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                         >
@@ -68,12 +68,14 @@ export default function CrearEmpleado() {
                                     <input
                                         type="text"
                                         value={data.nombre}
-                                        onChange={(e) => setData('nombre', e.target.value)}
+                                        onChange={e => setData('nombre', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="Ej: Ana García Martínez"
                                         required
                                     />
-                                    {errors.nombre && <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>}
+                                    {errors.nombre && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.nombre}</p>
+                                    )}
                                 </div>
 
                                 {/* Email */}
@@ -84,12 +86,14 @@ export default function CrearEmpleado() {
                                     <input
                                         type="email"
                                         value={data.email}
-                                        onChange={(e) => setData('email', e.target.value)}
+                                        onChange={e => setData('email', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="ana.garcia@empresa.com"
                                         required
                                     />
-                                    {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+                                    {errors.email && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                                    )}
                                 </div>
 
                                 {/* Departamento */}
@@ -99,7 +103,7 @@ export default function CrearEmpleado() {
                                     </label>
                                     <select
                                         value={data.departamento}
-                                        onChange={(e) => {
+                                        onChange={e => {
                                             setData('departamento', e.target.value);
                                             setData('puesto', ''); // Reset puesto
                                         }}
@@ -108,10 +112,16 @@ export default function CrearEmpleado() {
                                     >
                                         <option value="">Seleccionar departamento</option>
                                         {departamentos.map(dept => (
-                                            <option key={dept} value={dept}>{dept}</option>
+                                            <option key={dept} value={dept}>
+                                                {dept}
+                                            </option>
                                         ))}
                                     </select>
-                                    {errors.departamento && <p className="mt-1 text-sm text-red-600">{errors.departamento}</p>}
+                                    {errors.departamento && (
+                                        <p className="mt-1 text-sm text-red-600">
+                                            {errors.departamento}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Puesto */}
@@ -121,19 +131,26 @@ export default function CrearEmpleado() {
                                     </label>
                                     <select
                                         value={data.puesto}
-                                        onChange={(e) => setData('puesto', e.target.value)}
+                                        onChange={e => setData('puesto', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         required
                                         disabled={!data.departamento}
                                     >
                                         <option value="">
-                                            {data.departamento ? 'Seleccionar puesto' : 'Primero selecciona departamento'}
+                                            {data.departamento
+                                                ? 'Seleccionar puesto'
+                                                : 'Primero selecciona departamento'}
                                         </option>
-                                        {data.departamento && puestos[data.departamento]?.map(puesto => (
-                                            <option key={puesto} value={puesto}>{puesto}</option>
-                                        ))}
+                                        {data.departamento &&
+                                            puestos[data.departamento]?.map(puesto => (
+                                                <option key={puesto} value={puesto}>
+                                                    {puesto}
+                                                </option>
+                                            ))}
                                     </select>
-                                    {errors.puesto && <p className="mt-1 text-sm text-red-600">{errors.puesto}</p>}
+                                    {errors.puesto && (
+                                        <p className="mt-1 text-sm text-red-600">{errors.puesto}</p>
+                                    )}
                                 </div>
 
                                 {/* Salario */}
@@ -144,13 +161,17 @@ export default function CrearEmpleado() {
                                     <input
                                         type="number"
                                         value={data.salario}
-                                        onChange={(e) => setData('salario', e.target.value)}
+                                        onChange={e => setData('salario', e.target.value)}
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         placeholder="35000"
                                         min="0"
                                         step="100"
                                     />
-                                    {errors.salario && <p className="mt-1 text-sm text-red-600">{errors.salario}</p>}
+                                    {errors.salario && (
+                                        <p className="mt-1 text-sm text-red-600">
+                                            {errors.salario}
+                                        </p>
+                                    )}
                                 </div>
 
                                 {/* Fecha contratación */}
@@ -161,12 +182,18 @@ export default function CrearEmpleado() {
                                     <input
                                         type="date"
                                         value={data.fecha_contratacion}
-                                        onChange={(e) => setData('fecha_contratacion', e.target.value)}
+                                        onChange={e =>
+                                            setData('fecha_contratacion', e.target.value)
+                                        }
                                         className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                         max={new Date().toISOString().split('T')[0]}
                                         required
                                     />
-                                    {errors.fecha_contratacion && <p className="mt-1 text-sm text-red-600">{errors.fecha_contratacion}</p>}
+                                    {errors.fecha_contratacion && (
+                                        <p className="mt-1 text-sm text-red-600">
+                                            {errors.fecha_contratacion}
+                                        </p>
+                                    )}
                                 </div>
                             </div>
 
@@ -177,12 +204,14 @@ export default function CrearEmpleado() {
                                 </label>
                                 <textarea
                                     value={data.notas}
-                                    onChange={(e) => setData('notas', e.target.value)}
+                                    onChange={e => setData('notas', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     rows="3"
                                     placeholder="Información adicional sobre el empleado..."
                                 />
-                                {errors.notas && <p className="mt-1 text-sm text-red-600">{errors.notas}</p>}
+                                {errors.notas && (
+                                    <p className="mt-1 text-sm text-red-600">{errors.notas}</p>
+                                )}
                             </div>
 
                             {/* Estado */}
@@ -191,18 +220,19 @@ export default function CrearEmpleado() {
                                     <input
                                         type="checkbox"
                                         checked={data.activo}
-                                        onChange={(e) => setData('activo', e.target.checked)}
+                                        onChange={e => setData('activo', e.target.checked)}
                                         className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 h-4 w-4"
                                     />
                                     <span className="ml-3 text-sm">
                                         <span className="font-medium text-gray-900">
-                                            {data.activo ? '✅ Empleado activo' : '❌ Empleado inactivo'}
+                                            {data.activo
+                                                ? '✅ Empleado activo'
+                                                : '❌ Empleado inactivo'}
                                         </span>
                                         <span className="block text-gray-500">
-                                            {data.activo 
-                                                ? 'El empleado tendrá acceso al sistema desde el primer día' 
-                                                : 'El empleado estará registrado pero sin acceso'
-                                            }
+                                            {data.activo
+                                                ? 'El empleado tendrá acceso al sistema desde el primer día'
+                                                : 'El empleado estará registrado pero sin acceso'}
                                         </span>
                                     </span>
                                 </label>
@@ -210,7 +240,7 @@ export default function CrearEmpleado() {
 
                             {/* Botones */}
                             <div className="flex justify-end space-x-3 pt-6 border-t">
-                                <Link 
+                                <Link
                                     href={route('empleados.index')}
                                     className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
@@ -218,7 +248,12 @@ export default function CrearEmpleado() {
                                 </Link>
                                 <button
                                     type="submit"
-                                    disabled={processing || !data.nombre || !data.email || !data.departamento}
+                                    disabled={
+                                        processing ||
+                                        !data.nombre ||
+                                        !data.email ||
+                                        !data.departamento
+                                    }
                                     className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center"
                                 >
                                     {processing ? (

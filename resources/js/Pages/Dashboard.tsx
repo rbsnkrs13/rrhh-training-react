@@ -6,9 +6,11 @@ import HeaderConFiltros from '@/Components/Dashboard/HeaderConFiltros';
 import MetricasPrincipales from '@/Components/Dashboard/MetricasPrincipales';
 import MetricasSecundarias from '@/Components/Dashboard/MetricasSecundarias';
 import SeccionDepartamentos from '@/Components/Dashboard/SeccionDepartamentos';
+import { Clock, FileText, Users, BarChart3 } from 'lucide-react';
 import type { DashboardProps } from '@/types';
 
-export default function Dashboard({ empleadosIniciales, configuracion }: DashboardProps) { //Datos importados de web.php
+export default function Dashboard({ empleadosIniciales, configuracion }: DashboardProps) {
+    //Datos importados de web.php
     const [empleados] = useState(empleadosIniciales); // lista de empleados, no cambia, solo para cálculos
     const [animacionActiva, setAnimacionActiva] = useState(false); // Estados para efectos visuales en este caso cuando cambian las métricas
 
@@ -19,17 +21,16 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
         setAñoSeleccionado,
         setMesSeleccionado,
         meses,
-        añosCompletos
+        añosCompletos,
     } = usePeriodos(empleados);
 
-    const { 
-        metricas,
-        cargandoMetricas, 
-        simularCarga 
-    } = useMetricas(empleados,añoSeleccionado,mesSeleccionado);
+    const { metricas, cargandoMetricas, simularCarga } = useMetricas(
+        empleados,
+        añoSeleccionado,
+        mesSeleccionado
+    );
 
     const { departamentos, deptoMayorEmpleados } = useDepartamentos(empleados);
-
 
     // useEffect optimizado - solo maneja animaciones
     useEffect(() => {
@@ -56,7 +57,7 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
                 período: `${meses.find(m => m.valor === mesSeleccionado)?.nombre} ${añoSeleccionado}`,
                 empleadosContratados: metricas.empleadosContratadosMes,
                 totalEmpleados: metricas.totalEmpleados,
-                ratioRetención: `${metricas.ratioRetencion.toFixed(1)}%`
+                ratioRetención: `${metricas.ratioRetencion.toFixed(1)}%`,
             });
 
             // Alertas inteligentes
@@ -68,7 +69,6 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
             }
         }
     }, [metricas, cargandoMetricas, añoSeleccionado, mesSeleccionado, meses]);
-
 
     //Render del dashboard
     return (
@@ -96,10 +96,91 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
                         meses={meses}
                     />
 
+                    {/* Accesos Rápidos */}
+                    <div className="mb-8">
+                        <h3 className="text-lg font-semibold text-gray-900 mb-4">Accesos Rápidos</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                            {/* Tarjeta Fichajes */}
+                            <a
+                                href="/fichajes"
+                                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-300 group"
+                            >
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <Clock className="h-8 w-8 text-blue-600 group-hover:text-blue-700" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <h4 className="text-sm font-medium text-gray-900 group-hover:text-blue-700">
+                                            Sistema de Fichajes
+                                        </h4>
+                                        <p className="text-sm text-gray-500">
+                                            Ver fichajes de empleados
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            {/* Tarjeta Nóminas */}
+                            <a
+                                href="/nominas"
+                                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-green-300 group"
+                            >
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <FileText className="h-8 w-8 text-green-600 group-hover:text-green-700" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <h4 className="text-sm font-medium text-gray-900 group-hover:text-green-700">
+                                            Gestión de Nóminas
+                                        </h4>
+                                        <p className="text-sm text-gray-500">
+                                            Subir y gestionar nóminas
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            {/* Tarjeta Gestión Empleados */}
+                            <a
+                                href="/empleados"
+                                className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-purple-300 group"
+                            >
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <Users className="h-8 w-8 text-purple-600 group-hover:text-purple-700" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <h4 className="text-sm font-medium text-gray-900 group-hover:text-purple-700">
+                                            Gestión Empleados
+                                        </h4>
+                                        <p className="text-sm text-gray-500">
+                                            Ver y gestionar empleados
+                                        </p>
+                                    </div>
+                                </div>
+                            </a>
+
+                            {/* Tarjeta Reportes */}
+                            <div className="bg-white p-6 rounded-lg shadow border border-gray-200 opacity-60">
+                                <div className="flex items-center">
+                                    <div className="flex-shrink-0">
+                                        <BarChart3 className="h-8 w-8 text-gray-400" />
+                                    </div>
+                                    <div className="ml-4">
+                                        <h4 className="text-sm font-medium text-gray-500">
+                                            Reportes Avanzados
+                                        </h4>
+                                        <p className="text-sm text-gray-400">
+                                            Próximamente...
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     {/* Métricas secundarias */}
-                    <MetricasSecundarias
-                        metricas={metricas}
-                    />
+                    <MetricasSecundarias metricas={metricas} />
 
                     {/* Sección departamentos */}
                     <SeccionDepartamentos
@@ -113,4 +194,3 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
         </div>
     );
 }
-

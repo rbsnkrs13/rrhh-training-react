@@ -15,8 +15,10 @@ export default function useMetricas(
     const metricas = useMemo<Metricas>(() => {
         const empleadosPeriodo = empleados.filter(emp => {
             const fechaContratacion = new Date(emp.fecha_contratacion);
-            return fechaContratacion.getFullYear() === añoSeleccionado &&
-                fechaContratacion.getMonth() + 1 === mesSeleccionado;
+            return (
+                fechaContratacion.getFullYear() === añoSeleccionado &&
+                fechaContratacion.getMonth() + 1 === mesSeleccionado
+            );
         });
 
         // Cálculos de métricas clave, cantidad de empleados activos/inactivos, media de antiguedad y salario, ratio de retención, rango salarial
@@ -24,26 +26,33 @@ export default function useMetricas(
         const empleadosInactivosTotal = empleados.filter(emp => !emp.activo).length;
         const totalEmpleados = empleados.length;
 
-        const promedioAntiguedad = empleados.reduce((acc, emp) => {
-            const años = (new Date().getTime() - new Date(emp.fecha_contratacion).getTime()) / (1000 * 60 * 60 * 24 * 365);
-            return acc + años;
-        }, 0) / empleados.length;
+        const promedioAntiguedad =
+            empleados.reduce((acc, emp) => {
+                const años =
+                    (new Date().getTime() - new Date(emp.fecha_contratacion).getTime()) /
+                    (1000 * 60 * 60 * 24 * 365);
+                return acc + años;
+            }, 0) / empleados.length;
 
-        const promedioSalarial = empleados.reduce((acc, emp) => {
-            const salario = emp.salario ? parseFloat(emp.salario.toString()) : 0;
-            return acc + salario;
-        }, 0) / empleados.length;
+        const promedioSalarial =
+            empleados.reduce((acc, emp) => {
+                const salario = emp.salario ? parseFloat(emp.salario.toString()) : 0;
+                return acc + salario;
+            }, 0) / empleados.length;
 
         const ratioRetencion = (empleadosActivosTotal / totalEmpleados) * 100;
 
         const salarios = empleados
-            .map(e => e.salario ? parseFloat(e.salario.toString()) : 0)
+            .map(e => (e.salario ? parseFloat(e.salario.toString()) : 0))
             .filter(s => !isNaN(s) && s > 0);
 
-        const rangoSalarial = salarios.length > 0 ? {
-            min: Math.min(...salarios),
-            max: Math.max(...salarios)
-        } : { min: 0, max: 0 };
+        const rangoSalarial =
+            salarios.length > 0
+                ? {
+                      min: Math.min(...salarios),
+                      max: Math.max(...salarios),
+                  }
+                : { min: 0, max: 0 };
 
         // Devuelve todas las métricas calculadas
         return {
@@ -54,7 +63,7 @@ export default function useMetricas(
             promedioAntiguedad,
             promedioSalarial,
             ratioRetencion,
-            rangoSalarial
+            rangoSalarial,
         };
     }, [empleados, añoSeleccionado, mesSeleccionado]);
 
