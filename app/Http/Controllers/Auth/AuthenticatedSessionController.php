@@ -33,7 +33,14 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        // Redirigir según el email del usuario (temporal)
+        if ($user->email === 'admin@empresa.com') {
+            return redirect()->intended(route('dashboard', absolute: false));
+        } else {
+            return redirect()->intended(route('empleado.dashboard', absolute: false));
+        }
     }
 
     /**

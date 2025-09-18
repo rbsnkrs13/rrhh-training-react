@@ -46,7 +46,7 @@ class EmpleadoController extends Controller
 
         $empleados = $query->get();
 
-        return Inertia::render('Empleados', [
+        return Inertia::render('Admin/Empleados', [
             'empleados' => $empleados,
             'filtros' => $request->only(['busqueda', 'departamento', 'estado', 'ordenPor'])
         ]);
@@ -55,7 +55,7 @@ class EmpleadoController extends Controller
     // Formulario para crear un nuevo empleado
     public function create()
     {
-        return Inertia::render('CrearEmpleado');
+        return Inertia::render('Admin/CrearEmpleado');
     }
 
     // Almacena un nuevo empleado en la base de datos validando los datos recibidos
@@ -92,7 +92,7 @@ class EmpleadoController extends Controller
     // Formulario para editar un empleado existente
     public function edit(Empleado $empleado)
     {
-        return Inertia::render('EditarEmpleado', [
+        return Inertia::render('Admin/EditarEmpleado', [
             'empleado' => $empleado
         ]);
     }
