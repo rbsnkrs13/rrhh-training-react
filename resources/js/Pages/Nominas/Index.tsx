@@ -36,18 +36,36 @@ interface NominasIndexProps extends PageProps {
 }
 
 export default function Index({
-    auth,
     nominas,
     año,
     añosDisponibles,
     estadisticas
 }: NominasIndexProps) {
     const [filtroAño, setFiltroAño] = useState(año);
+    const [filtroMes, setFiltroMes] = useState<number | 'todos'>('todos');
+
+    const meses = [
+        { valor: 'todos', nombre: 'Todos los meses' },
+        { valor: 1, nombre: 'Enero' },
+        { valor: 2, nombre: 'Febrero' },
+        { valor: 3, nombre: 'Marzo' },
+        { valor: 4, nombre: 'Abril' },
+        { valor: 5, nombre: 'Mayo' },
+        { valor: 6, nombre: 'Junio' },
+        { valor: 7, nombre: 'Julio' },
+        { valor: 8, nombre: 'Agosto' },
+        { valor: 9, nombre: 'Septiembre' },
+        { valor: 10, nombre: 'Octubre' },
+        { valor: 11, nombre: 'Noviembre' },
+        { valor: 12, nombre: 'Diciembre' },
+    ];
 
     const aplicarFiltro = () => {
-        router.get('/nominas', {
-            año: filtroAño
-        });
+        const params: any = { año: filtroAño };
+        if (filtroMes !== 'todos') {
+            params.mes = filtroMes;
+        }
+        router.get('/nominas', params);
     };
 
     const descargarNomina = (nominaId: number) => {
@@ -94,7 +112,6 @@ export default function Index({
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={
                 <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
@@ -115,11 +132,15 @@ export default function Index({
                         <div className="p-6">
                             <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
                                 <Calendar className="w-5 h-5 mr-2" />
-                                Filtrar por Año
+                                Filtrar Nóminas
                             </h3>
 
-                            <div className="flex items-center space-x-4">
-                                <div className="flex-1 max-w-xs">
+                            <div className="flex items-end gap-4">
+                                {/* Selector de Año */}
+                                <div className="w-40">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Año
+                                    </label>
                                     <select
                                         value={filtroAño}
                                         onChange={(e) => setFiltroAño(Number(e.target.value))}
@@ -130,9 +151,29 @@ export default function Index({
                                         ))}
                                     </select>
                                 </div>
+
+                                {/* Selector de Mes */}
+                                <div className="w-48">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mes
+                                    </label>
+                                    <select
+                                        value={filtroMes}
+                                        onChange={(e) => setFiltroMes(e.target.value === 'todos' ? 'todos' : Number(e.target.value))}
+                                        className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        {meses.map(mes => (
+                                            <option key={mes.valor} value={mes.valor}>
+                                                {mes.nombre}
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* Botón Filtrar */}
                                 <button
                                     onClick={aplicarFiltro}
-                                    className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+                                    className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors font-medium text-sm"
                                 >
                                     Filtrar
                                 </button>

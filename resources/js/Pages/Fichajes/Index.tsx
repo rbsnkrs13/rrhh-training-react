@@ -30,7 +30,6 @@ interface FichajesIndexProps extends PageProps {
 }
 
 export default function Index({
-    auth,
     fichajeHoy,
     fichajesDelMes,
     estadisticas,
@@ -63,7 +62,6 @@ export default function Index({
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={
                 <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">
@@ -112,7 +110,7 @@ export default function Index({
                                 <div className="bg-gray-50 p-4 rounded-lg">
                                     <div className="text-sm text-gray-500">Entrada / Salida</div>
                                     <div className="text-lg font-semibold">
-                                        {formatearHora(fichajeHoy?.hora_entrada)} - {formatearHora(fichajeHoy?.hora_salida)}
+                                        {formatearHora(fichajeHoy?.hora_entrada || null)} - {formatearHora(fichajeHoy?.hora_salida || null)}
                                     </div>
                                 </div>
 

@@ -20,14 +20,17 @@ class NominaSeeder extends Seeder
             $usuarios = User::where('email', '!=', 'admin@empresa.com')->get();
         }
 
-        // Períodos para crear nóminas (últimos 6 meses)
+        // Períodos para crear nóminas (año actual hasta septiembre)
         $periodos = [
-            ['mes' => 4, 'año' => 2024],   // Abril
-            ['mes' => 5, 'año' => 2024],   // Mayo
-            ['mes' => 6, 'año' => 2024],   // Junio
-            ['mes' => 7, 'año' => 2024],   // Julio
-            ['mes' => 8, 'año' => 2024],   // Agosto
-            ['mes' => 9, 'año' => 2024],   // Septiembre
+            ['mes' => 1, 'año' => 2025],   // Enero
+            ['mes' => 2, 'año' => 2025],   // Febrero
+            ['mes' => 3, 'año' => 2025],   // Marzo
+            ['mes' => 4, 'año' => 2025],   // Abril
+            ['mes' => 5, 'año' => 2025],   // Mayo
+            ['mes' => 6, 'año' => 2025],   // Junio
+            ['mes' => 7, 'año' => 2025],   // Julio
+            ['mes' => 8, 'año' => 2025],   // Agosto
+            ['mes' => 9, 'año' => 2025],   // Septiembre
         ];
 
         // Crear nóminas para cada usuario y cada mes
@@ -55,7 +58,7 @@ class NominaSeeder extends Seeder
             }
         }
 
-        $this->command->info('✅ Nóminas creadas: 6 meses para todos los empleados');
+        $this->command->info('✅ Nóminas creadas: 9 meses de 2025 para todos los empleados');
     }
 
     private function getNombreMes(int $mes): string

@@ -6,7 +6,7 @@ import FiltroAvanzado from '@/Components/Empleados/FiltrosAvanzados';
 import type { EmpleadosProps, Filtros, PageProps } from '@/types';
 
 export default function Empleados({ empleados }: EmpleadosProps) {
-    const { flash } = usePage<PageProps>().props;
+    const {} = usePage<PageProps>().props;
     const [expandidos, setExpandidos] = useState<Record<number, boolean>>({});
 
     const [filtros, setFiltros] = useState<Filtros>({
@@ -16,7 +16,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
         ordenPor: 'nombre',
     });
 
-    const toggleExpandido = empleadoId => {
+    const toggleExpandido = (empleadoId: number) => {
         setExpandidos(prev => ({
             ...prev,
             [empleadoId]: !prev[empleadoId],
@@ -53,7 +53,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
                 case 'departamento':
                     return a.departamento.localeCompare(b.departamento);
                 case 'estado':
-                    return b.activo - a.activo; // Activos primero
+                    return (b.activo ? 1 : 0) - (a.activo ? 1 : 0); // Activos primero
                 default:
                     return 0;
             }
@@ -62,7 +62,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
     // Departamentos únicos
     const departamentos = [...new Set(empleados.map(emp => emp.departamento))];
 
-    const manejarCambioFiltros = nuevosFiltros => {
+    const manejarCambioFiltros = (nuevosFiltros: Filtros) => {
         setFiltros(nuevosFiltros);
     };
 
@@ -70,8 +70,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
         <AuthenticatedLayout>
             <div className="py-8">
                 <div className="max-w-7xl mx-auto px-4">
-                    {flash?.success && <FlashMessage message={flash.success} type="success" />}
-                    {flash?.error && <FlashMessage message={flash.error} type="error" />}
+                    <FlashMessage />
 
                     {/* Header */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6">
@@ -197,7 +196,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
                                                                         <span className="text-green-600 font-semibold">
                                                                             €
                                                                             {parseFloat(
-                                                                                empleado.salario
+                                                                                empleado.salario.toString()
                                                                             ).toLocaleString()}
                                                                         </span>
                                                                     ) : (

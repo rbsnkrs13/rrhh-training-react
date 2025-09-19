@@ -1,8 +1,16 @@
 import { useForm, Link, usePage } from '@inertiajs/react';
 import FlashMessage from '@/Components/Common/FlashMessage';
 
+interface PageProps {
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+    [key: string]: any;
+}
+
 export default function CrearEmpleado() {
-    const { flash } = usePage().props;
+    const {} = usePage<PageProps>().props;
 
     const { data, setData, post, processing, errors } = useForm({
         nombre: '',
@@ -26,7 +34,7 @@ export default function CrearEmpleado() {
         Logística: ['Operador', 'Supervisor', 'Coordinador', 'Almacén'],
     };
 
-    const enviarFormulario = e => {
+    const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
 
         post(route('empleados.store'), {
@@ -40,8 +48,7 @@ export default function CrearEmpleado() {
         <div className="min-h-screen bg-gray-100">
             <div className="py-8">
                 <div className="max-w-2xl mx-auto px-4">
-                    {flash?.success && <FlashMessage message={flash.success} type="success" />}
-                    {flash?.error && <FlashMessage message={flash.error} type="error" />}
+                    <FlashMessage />
 
                     <div className="flex justify-between items-center mb-8">
                         <h1 className="text-3xl font-bold text-gray-900">
@@ -142,7 +149,7 @@ export default function CrearEmpleado() {
                                                 : 'Primero selecciona departamento'}
                                         </option>
                                         {data.departamento &&
-                                            puestos[data.departamento]?.map(puesto => (
+                                            (puestos as Record<string, string[]>)[data.departamento]?.map((puesto: string) => (
                                                 <option key={puesto} value={puesto}>
                                                     {puesto}
                                                 </option>
@@ -206,7 +213,7 @@ export default function CrearEmpleado() {
                                     value={data.notas}
                                     onChange={e => setData('notas', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows="3"
+                                    rows={3}
                                     placeholder="Información adicional sobre el empleado..."
                                 />
                                 {errors.notas && (

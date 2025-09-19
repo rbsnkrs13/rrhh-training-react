@@ -23,7 +23,6 @@ interface FichajesHistorialProps extends PageProps {
 }
 
 export default function Historial({
-    auth,
     fichajes,
     año,
     mes,
@@ -100,7 +99,6 @@ export default function Historial({
 
     return (
         <AuthenticatedLayout
-            user={auth.user}
             header={
                 <div className="flex items-center justify-between">
                     <h2 className="font-semibold text-xl text-gray-800 leading-tight">

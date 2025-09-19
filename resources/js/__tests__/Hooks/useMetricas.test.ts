@@ -1,5 +1,5 @@
 import { renderHook } from '@testing-library/react';
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach, vi } from 'vitest';
 import useMetricas from '@/Hooks/useMetricas';
 import type { Empleado } from '@/types';
 
@@ -47,7 +47,7 @@ describe('useMetricas', () => {
 
     it('debe calcular métricas básicas correctamente', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         const { metricas } = result.current;
@@ -59,7 +59,7 @@ describe('useMetricas', () => {
 
     it('debe calcular promedio salarial correctamente', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         const { metricas } = result.current;
@@ -70,7 +70,7 @@ describe('useMetricas', () => {
 
     it('debe calcular rango salarial correctamente', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         const { metricas } = result.current;
@@ -81,7 +81,7 @@ describe('useMetricas', () => {
 
     it('debe calcular ratio de retención correctamente', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         const { metricas } = result.current;
@@ -92,7 +92,7 @@ describe('useMetricas', () => {
 
     it('debe filtrar empleados por mes y año de contratación', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2023, 1, false)
+            useMetricas(mockEmpleados, 2023, 1)
         );
 
         const { metricas } = result.current;
@@ -102,7 +102,7 @@ describe('useMetricas', () => {
     });
 
     it('debe manejar lista vacía de empleados', () => {
-        const { result } = renderHook(() => useMetricas([], 2024, 1, false));
+        const { result } = renderHook(() => useMetricas([], 2024, 1));
 
         const { metricas } = result.current;
 
@@ -117,7 +117,7 @@ describe('useMetricas', () => {
 
     it('debe mostrar estado de carga inicial como false', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         expect(result.current.cargandoMetricas).toBe(false);
@@ -125,7 +125,7 @@ describe('useMetricas', () => {
 
     it('debe proporcionar función simularCarga', () => {
         const { result } = renderHook(() =>
-            useMetricas(mockEmpleados, 2024, 1, false)
+            useMetricas(mockEmpleados, 2024, 1)
         );
 
         expect(typeof result.current.simularCarga).toBe('function');

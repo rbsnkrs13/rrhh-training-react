@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import { router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { User } from '@/types';
+import { Clock, CheckCircle, XCircle, FileText, User as UserIcon, Calendar } from 'lucide-react';
 // Componentes
 import BienvenidaReloj from '@/Components/Employee/BienvenidaReloj';
 import EstadoFichaje from '@/Components/Employee/EstadoFichaje';
@@ -112,9 +113,7 @@ export default function EmpleadoDashboard({
 
     // ===== RENDER DEL COMPONENTE =====
     return (
-        <AuthenticatedLayout
-            user={auth.user}
-        >
+        <AuthenticatedLayout>
             {/* Título de la página para SEO */}
             <Head title="Panel de Empleado" />
 

@@ -1,8 +1,20 @@
 import { useForm, Link, usePage } from '@inertiajs/react';
 import FlashMessage from '@/Components/Common/FlashMessage';
+import type { Empleado } from '@/types';
 
-export default function EditarEmpleado({ empleado }) {
-    const { flash } = usePage().props;
+interface PageProps {
+    flash?: {
+        success?: string;
+        error?: string;
+    };
+}
+
+interface EditarEmpleadoProps {
+    empleado: Empleado;
+}
+
+export default function EditarEmpleado({ empleado }: EditarEmpleadoProps) {
+    const { flash } = usePage<PageProps>().props;
 
     const { data, setData, put, processing, errors } = useForm({
         nombre: empleado.nombre,
@@ -26,7 +38,7 @@ export default function EditarEmpleado({ empleado }) {
         Logística: ['Operador', 'Supervisor', 'Coordinador', 'Almacén'],
     };
 
-    const enviarFormulario = e => {
+    const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
 
         put(`/empleados/${empleado.id}`, {
@@ -40,8 +52,7 @@ export default function EditarEmpleado({ empleado }) {
         <div className="min-h-screen bg-gray-100">
             <div className="py-8">
                 <div className="max-w-2xl mx-auto px-4">
-                    {flash?.success && <FlashMessage message={flash.success} type="success" />}
-                    {flash?.error && <FlashMessage message={flash.error} type="error" />}
+                    <FlashMessage />
 
                     <div className="flex justify-between items-center mb-8">
                         <div>
@@ -106,9 +117,9 @@ export default function EditarEmpleado({ empleado }) {
                                     <select
                                         value={data.departamento}
                                         onChange={e => {
-                                            setData('departamento', e.target.value);
+                                            setData('departamento', e.target.value as any);
                                             // Mantener puesto si existe en el nuevo departamento
-                                            if (!puestos[e.target.value]?.includes(data.puesto)) {
+                                            if (!(puestos as Record<string, string[]>)[e.target.value]?.includes(data.puesto)) {
                                                 setData('puesto', '');
                                             }
                                         }}
@@ -141,7 +152,7 @@ export default function EditarEmpleado({ empleado }) {
                                     >
                                         <option value="">Seleccionar puesto</option>
                                         {data.departamento &&
-                                            puestos[data.departamento]?.map(puesto => (
+                                            (puestos as Record<string, string[]>)[data.departamento]?.map((puesto: string) => (
                                                 <option key={puesto} value={puesto}>
                                                     {puesto}
                                                 </option>
@@ -204,7 +215,7 @@ export default function EditarEmpleado({ empleado }) {
                                     value={data.notas}
                                     onChange={e => setData('notas', e.target.value)}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                    rows="3"
+                                    rows={3}
                                     placeholder="Información adicional sobre el empleado..."
                                 />
                                 {errors.notas && (
