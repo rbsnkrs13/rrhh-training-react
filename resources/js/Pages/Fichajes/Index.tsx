@@ -61,18 +61,7 @@ export default function Index({
     const puedeSalir = fichajeHoy && fichajeHoy.hora_entrada && !fichajeHoy.hora_salida;
 
     return (
-        <AuthenticatedLayout
-            header={
-                <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                        Sistema de Fichajes
-                    </h2>
-                    <div className="text-sm text-gray-500">
-                        {formatearFecha(fechaActual)}
-                    </div>
-                </div>
-            }
-        >
+        <AuthenticatedLayout>
             <Head title="Fichajes" />
 
             <div className="py-12">

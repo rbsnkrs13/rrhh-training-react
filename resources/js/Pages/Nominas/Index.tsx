@@ -111,18 +111,7 @@ export default function Index({
     };
 
     return (
-        <AuthenticatedLayout
-            header={
-                <div className="flex items-center justify-between">
-                    <h2 className="font-semibold text-xl text-gray-800 leading-tight">
-                        Mis Nóminas
-                    </h2>
-                    <div className="text-sm text-gray-500">
-                        Año {año}
-                    </div>
-                </div>
-            }
-        >
+        <AuthenticatedLayout>
             <Head title="Nóminas" />
 
             <div className="py-12">
