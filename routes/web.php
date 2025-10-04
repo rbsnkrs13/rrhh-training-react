@@ -1,8 +1,12 @@
 <?php
 
-use App\Http\Controllers\EmpleadoController;
-use App\Http\Controllers\FichajeController;
-use App\Http\Controllers\NominaController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\EmpleadoController as AdminEmpleadoController;
+use App\Http\Controllers\Admin\FichajeController as AdminFichajeController;
+use App\Http\Controllers\Admin\FichajeDashboardController as AdminFichajeDashboardController;
+use App\Http\Controllers\Admin\NominaController as AdminNominaController;
+use App\Http\Controllers\User\FichajeController as UserFichajeController;
+use App\Http\Controllers\User\NominaController as UserNominaController;
 use App\Models\Empleado;
 use App\Models\Fichaje;
 use App\Models\Nomina;
@@ -11,156 +15,153 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
-// Ruta raíz que redirije según el usuario
+// ============================================
+// RUTA RAÍZ - Redirección según tipo de usuario
+// ============================================
 Route::get('/', function () {
-    $user = Auth::user();
-
-    // Si es admin, mostrar dashboard admin
-    if ($user->email === 'admin@empresa.com') {
-        $empleados = Empleado::all();
-
-        return Inertia::render('Admin/Dashboard', [
-            'empleadosIniciales' => $empleados,
-            'configuracion' => [
-                'empresa' => 'RRHH',
-                'version' => '2.0.0'
-            ]
-        ]);
-    } else {
-        // Si es empleado, redirigir a su dashboard
-        return redirect()->route('empleado.dashboard');
+    if (auth()->user()->email === 'admin@empresa.com') {
+        return redirect()->route('admin.dashboard');
     }
-})->name('dashboard')->middleware(['auth']);
+    return redirect()->route('dashboard');
+})->middleware(['auth']);
 
-// Dashboard para empleados con datos reales
-Route::get('/empleado/dashboard', function () {
-    $user = Auth::user();
+// ============================================
+// RUTAS ADMIN - Solo accesibles por administradores
+// ============================================
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
 
-    // Obtener fichajes recientes del usuario y crear entradas/salidas separadas
-    $fichajesDB = Fichaje::where('empleado_id', $user->id)
-        ->orderBy('fecha', 'desc')
-        ->limit(8)
-        ->get();
+    // Dashboard Admin
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
 
-    $fichajesRecientes = collect();
+    // Empleados CRUD
+    Route::resource('empleados', AdminEmpleadoController::class);
 
-    foreach ($fichajesDB as $fichaje) {
-        $fechaSolo = Carbon::parse($fichaje->fecha)->format('Y-m-d');
+    // Fichajes - Dashboard con todos los fichajes
+    Route::get('/fichajes', [AdminFichajeDashboardController::class, 'index'])->name('fichajes.dashboard');
 
-        // Agregar entrada (formato directo sin conversión)
-        $fichajesRecientes->push([
-            'id' => $fichaje->id . '_entrada',
-            'tipo' => 'entrada',
-            'fecha_hora' => $fechaSolo . ' ' . $fichaje->hora_entrada
-        ]);
+    // Fichajes - Vista individual empleado (la que ya existía)
+    Route::get('/fichajes/empleado/{id}', [AdminFichajeController::class, 'index'])->name('fichajes.empleado');
 
-        // Agregar salida si existe (formato directo sin conversión)
-        if ($fichaje->hora_salida) {
-            $fichajesRecientes->push([
-                'id' => $fichaje->id . '_salida',
-                'tipo' => 'salida',
-                'fecha_hora' => $fechaSolo . ' ' . $fichaje->hora_salida
-            ]);
-        }
-    }
+    // Nóminas (gestión masiva admin)
+    Route::get('/nominas', [AdminNominaController::class, 'index'])->name('nominas.index');
+    Route::post('/nominas/subir', [AdminNominaController::class, 'subir'])->name('nominas.subir');
+    Route::post('/nominas/subir-masivo', [AdminNominaController::class, 'subirMasivo'])->name('nominas.subir-masivo');
+    Route::put('/nominas/{nomina}', [AdminNominaController::class, 'actualizar'])->name('nominas.actualizar');
+    Route::delete('/nominas/{nomina}', [AdminNominaController::class, 'eliminar'])->name('nominas.eliminar');
+});
 
-    // Ordenar por fecha más reciente y limitar a 10
-    $fichajesRecientes = $fichajesRecientes
-        ->sortByDesc('fecha_hora')
-        ->take(10)
-        ->values();
+// ============================================
+// RUTAS EMPLEADO - Dashboard personal
+// ============================================
+Route::middleware(['auth'])->group(function () {
 
-    // Obtener nóminas del usuario
-    $nominasRecientes = Nomina::where('empleado_id', $user->id)
-        ->orderBy('año', 'desc')
-        ->orderBy('mes', 'desc')
-        ->limit(5)
-        ->get()
-        ->map(function($nomina) {
+    // Dashboard Empleado
+    Route::get('/dashboard', function () {
+        $user = Auth::user();
+
+        // Obtener fichajes recientes agrupados por día (últimos 7 días)
+        $fechasRecientes = Fichaje::where('empleado_id', $user->id)
+            ->select('fecha')
+            ->distinct()
+            ->orderBy('fecha', 'desc')
+            ->limit(7)
+            ->pluck('fecha');
+
+        $fichajesRecientes = $fechasRecientes->map(function($fecha) use ($user) {
+            $horas = Fichaje::calcularHorasDia($user->id, $fecha);
             return [
-                'id' => $nomina->id,
-                'mes' => $nomina->mes,
-                'año' => $nomina->año,
-                'archivo' => $nomina->archivo_nombre
+                'fecha' => $fecha,
+                'horas' => $horas,
+                'completo' => $horas >= 8
             ];
         });
 
-    // Buscar información del empleado por email
-    $empleadoInfo = Empleado::where('email', $user->email)->first();
+        // Obtener nóminas del usuario (solo las que tienen datos completos)
+        $nominasRecientes = Nomina::where('empleado_id', $user->id)
+            ->whereNotNull('salario_bruto')
+            ->whereNotNull('salario_neto')
+            ->orderBy('año', 'desc')
+            ->orderBy('mes', 'desc')
+            ->limit(5)
+            ->get()
+            ->map(function($nomina) {
+                return [
+                    'id' => $nomina->id,
+                    'mes' => $nomina->nombre_mes,
+                    'año' => $nomina->año,
+                    'archivo' => $nomina->archivo_nombre,
+                    'salario_bruto' => $nomina->salario_bruto,
+                    'salario_neto' => $nomina->salario_neto,
+                ];
+            });
 
-    // Calcular estado de fichaje actual (fichaje de hoy)
-    $fichajeHoy = Fichaje::where('empleado_id', $user->id)
-        ->whereDate('fecha', Carbon::today())
-        ->first();
+        // Buscar información del empleado por email
+        $empleadoInfo = Empleado::where('email', $user->email)->first();
 
-    $estadoFichaje = [
-        'fichado' => $fichajeHoy && !$fichajeHoy->hora_salida,
-        'ultimaEntrada' => $fichajeHoy ? $fichajeHoy->hora_entrada : null,
-        'horasHoy' => $fichajeHoy && $fichajeHoy->horas_trabajadas ? $fichajeHoy->horas_trabajadas : 0
-    ];
+        // Calcular estado de fichaje actual (fichaje de hoy)
+        $fechaHoy = Carbon::today()->format('Y-m-d');
+        $fichajesHoy = Fichaje::where('empleado_id', $user->id)
+            ->where('fecha', $fechaHoy)
+            ->orderBy('hora')
+            ->get();
 
-    // Calcular horas de la semana actual (lunes a viernes)
-    $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY);
-    $finSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY);
+        $tieneEntradaAbierta = Fichaje::tieneEntradaAbierta($user->id, $fechaHoy);
+        $horasHoy = Fichaje::calcularHorasDia($user->id, $fechaHoy);
+        $ultimaEntrada = $fichajesHoy->where('tipo', 'entrada')->last();
 
-    $fichajesSemana = Fichaje::where('empleado_id', $user->id)
-        ->whereBetween('fecha', [$inicioSemana, $finSemana])
-        ->where('estado', 'completo') // Solo fichajes completos
-        ->whereNotNull('hora_entrada')
-        ->whereNotNull('hora_salida')
-        ->get();
+        $estadoFichaje = [
+            'fichado' => $tieneEntradaAbierta,
+            'ultimaEntrada' => $ultimaEntrada ? $ultimaEntrada->hora : null,
+            'horasHoy' => $horasHoy
+        ];
 
-    $horasTrabajadas = 0;
-    foreach ($fichajesSemana as $fichaje) {
-        // Usar directamente las horas_trabajadas del seeder (ya calculadas)
-        $horasTrabajadas += $fichaje->horas_trabajadas ?? 0;
-    }
+        // Calcular horas de la semana actual (lunes a viernes)
+        $inicioSemana = Carbon::now()->startOfWeek(Carbon::MONDAY);
+        $finSemana = Carbon::now()->endOfWeek(Carbon::FRIDAY);
 
-    // Obtener horas semanales del contrato del empleado
-    $empleadoInfo = Empleado::where('email', $user->email)->first();
-    $contrato = null;
-    $horasObjetivo = 40; // Default
-    if ($empleadoInfo) {
-        $contrato = \App\Models\Contrato::where('empleado_id', $empleadoInfo->id)->first();
-        $horasObjetivo = $contrato ? $contrato->horas_semanales : 40;
-    }
+        $fechasSemana = Fichaje::where('empleado_id', $user->id)
+            ->whereBetween('fecha', [$inicioSemana, $finSemana])
+            ->select('fecha')
+            ->distinct()
+            ->pluck('fecha');
 
-    $horasSemana = [
-        'trabajadas' => $horasTrabajadas,
-        'objetivo' => $horasObjetivo
-    ];
+        $horasTrabajadas = 0;
+        foreach ($fechasSemana as $fecha) {
+            $horasTrabajadas += Fichaje::calcularHorasDia($user->id, $fecha);
+        }
 
-    return Inertia::render('Employee/EmpleadoDashboard', [
-        'fichajesRecientes' => $fichajesRecientes,
-        'nominasRecientes' => $nominasRecientes,
-        'empleadoInfo' => $empleadoInfo,
-        'estadoFichaje' => $estadoFichaje,
-        'horasSemana' => $horasSemana
-    ]);
-})->name('empleado.dashboard')->middleware(['auth']);
+        // Obtener horas semanales del contrato del empleado
+        $empleadoInfo = Empleado::where('email', $user->email)->first();
+        $contrato = null;
+        $horasObjetivo = 40; // Default
+        if ($empleadoInfo) {
+            $contrato = \App\Models\Contrato::where('empleado_id', $empleadoInfo->id)->first();
+            $horasObjetivo = $contrato ? $contrato->horas_semanales : 40;
+        }
 
-// CRUD completo de empleados (solo admin)
-Route::resource('empleados', EmpleadoController::class)->middleware(['auth']);
+        $horasSemana = [
+            'trabajadas' => $horasTrabajadas,
+            'objetivo' => $horasObjetivo
+        ];
 
-// Rutas de fichajes
-Route::middleware('auth')->group(function () {
-    // Admin: ver todos los fichajes
-    Route::get('/fichajes', [FichajeController::class, 'index'])->name('fichajes.index');
-    Route::get('/fichajes/historial', [FichajeController::class, 'historial'])->name('fichajes.historial');
+        return Inertia::render('Employee/EmpleadoDashboard', [
+            'fichajesRecientes' => $fichajesRecientes,
+            'nominasRecientes' => $nominasRecientes,
+            'empleadoInfo' => $empleadoInfo,
+            'estadoFichaje' => $estadoFichaje,
+            'horasSemana' => $horasSemana
+        ]);
+    })->name('dashboard');
 
-    // Empleados: fichar entrada/salida
-    Route::post('/fichajes/entrada', [FichajeController::class, 'ficharEntrada'])->name('fichajes.entrada');
-    Route::post('/fichajes/salida', [FichajeController::class, 'ficharSalida'])->name('fichajes.salida');
+    // Fichajes empleado
+    Route::get('/fichajes', [UserFichajeController::class, 'index'])->name('fichajes.index');
+    Route::get('/fichajes/historial', [UserFichajeController::class, 'historial'])->name('fichajes.historial');
+    Route::post('/fichajes/entrada', [UserFichajeController::class, 'ficharEntrada'])->name('fichajes.entrada');
+    Route::post('/fichajes/salida', [UserFichajeController::class, 'ficharSalida'])->name('fichajes.salida');
+
+    // Nóminas empleado
+    Route::get('/mis-nominas', [UserNominaController::class, 'index'])->name('user.nominas.index');
+    Route::get('/mis-nominas/{nomina}/descargar', [UserNominaController::class, 'descargar'])->name('user.nominas.descargar');
 });
 
-// Rutas de nóminas
-Route::middleware('auth')->group(function () {
-    // Empleados: ver sus propias nóminas
-    Route::get('/nominas', [NominaController::class, 'index'])->name('nominas.index');
-    Route::get('/nominas/{nomina}/descargar', [NominaController::class, 'descargar'])->name('nominas.descargar');
-
-    // Admin: gestionar nóminas
-    Route::post('/nominas/subir', [NominaController::class, 'subir'])->name('nominas.subir');
-    Route::post('/nominas/subir-masivo', [NominaController::class, 'subirMasivo'])->name('nominas.subir-masivo');
-    Route::delete('/nominas/{nomina}', [NominaController::class, 'eliminar'])->name('nominas.eliminar');
-});
+require __DIR__.'/auth.php';

@@ -22,92 +22,118 @@ class FichajeSeeder extends Seeder
         }
 
         // Generar fichajes para las últimas 3 semanas desde hoy (lunes a viernes)
-        $fechaFin = Carbon::now()->subDays(1); // Hasta ayer (no incluir hoy en el bucle histórico)
-        $fechaInicio = $fechaFin->copy()->subWeeks(3)->startOfWeek(); // 3 semanas atrás desde el lunes
-
+        $fechaFin = Carbon::now()->subDays(1);
+        $fechaInicio = $fechaFin->copy()->subWeeks(3)->startOfWeek();
         $fechaActual = $fechaInicio->copy();
 
         while ($fechaActual <= $fechaFin) {
-            // Solo días laborables (lunes a viernes)
             if ($fechaActual->isWeekday()) {
-
                 foreach ($usuarios as $usuario) {
                     // 85% probabilidad de que el empleado fiche ese día
                     if (rand(1, 100) <= 85) {
-
-                        // Hora de entrada entre 8:00 y 9:00
-                        $hora = 8;
-                        $minutos = rand(0, 60); // 0-60 min = 8:00 a 9:00
-                        if ($minutos >= 60) {
-                            $hora = 9;
-                            $minutos = 0;
-                        }
-                        $horaEntrada = str_pad($hora, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutos, 2, '0', STR_PAD_LEFT);
-
-                        // Calcular hora de salida: entrada + 8h trabajo + 1h pausa
-                        $entradaTime = Carbon::parse($fechaActual->format('Y-m-d') . ' ' . $horaEntrada);
-                        $salidaTime = $entradaTime->copy()->addHours(9); // 8h trabajo + 1h pausa
-                        $horaSalida = $salidaTime->format('H:i');
-
-                        // Calcular horas trabajadas (siempre 8h por diseño)
-                        $horasTrabajadas = 8;
-
-                        // Todos los días son completos
-                        Fichaje::create([
-                            'empleado_id' => $usuario->id,
-                            'fecha' => $fechaActual->format('Y-m-d'),
-                            'hora_entrada' => $horaEntrada,
-                            'hora_salida' => $horaSalida,
-                            'horas_trabajadas' => $horasTrabajadas,
-                            'estado' => 'completo'
-                        ]);
+                        $this->crearFichajesCompletos($usuario->id, $fechaActual);
                     }
                 }
             }
-
             $fechaActual->addDay();
         }
 
-        // Crear fichajes para HOY con lógica inteligente según la hora actual
-        $hoy = Carbon::now(); // Definir la variable $hoy correctamente
-        $empleadosHoy = $usuarios; // TODOS los usuarios tienen fichaje de hoy
+        // Crear fichajes para HOY
+        $hoy = Carbon::now();
         $horaActual = $hoy->hour;
 
-        foreach ($empleadosHoy as $usuario) {
-            // Hora de entrada realista (8:00-9:00)
-            $horaHoy = 8;
-            $minutosHoy = rand(0, 60); // 0-60 min = 8:00 a 9:00
-            if ($minutosHoy >= 60) {
-                $horaHoy = 9;
-                $minutosHoy = 0;
-            }
-            $horaEntrada = str_pad($horaHoy, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutosHoy, 2, '0', STR_PAD_LEFT);
-
-            // Lógica inteligente según la hora actual
+        foreach ($usuarios as $usuario) {
             if ($horaActual >= 18) {
-                // Después de las 6 PM: día completo (ya terminaron)
-                $entradaTime = Carbon::parse($hoy->format('Y-m-d') . ' ' . $horaEntrada);
-                $salidaTime = $entradaTime->copy()->addHours(9); // 8h trabajo + 1h pausa
-                $horaSalida = $salidaTime->format('H:i');
-                $horasTrabajadas = 8;
-                $estado = 'completo';
+                // Después de las 6 PM: día completo
+                $this->crearFichajesCompletos($usuario->id, $hoy);
             } else {
-                // Antes de las 6 PM: solo entrada (están trabajando)
-                $horaSalida = null;
-                $horasTrabajadas = null;
-                $estado = 'pendiente';
+                // Antes de las 6 PM: solo entrada o entrada + pausa
+                $this->crearFichajesParciales($usuario->id, $hoy, $horaActual);
             }
-
-            Fichaje::create([
-                'empleado_id' => $usuario->id,
-                'fecha' => $hoy->format('Y-m-d'),
-                'hora_entrada' => $horaEntrada,
-                'hora_salida' => $horaSalida,
-                'horas_trabajadas' => $horasTrabajadas,
-                'estado' => $estado
-            ]);
         }
 
-        $this->command->info('✅ Fichajes creados: fichajes de las últimas 3 semanas + actividad de hoy');
+        $this->command->info('✅ Fichajes creados con múltiples entradas/salidas por día');
+    }
+
+    private function crearFichajesCompletos($empleadoId, $fecha): void
+    {
+        // Entrada (8:00-9:00)
+        $horaEntrada = $this->generarHoraRandom(8, 0, 9, 0);
+        Fichaje::create([
+            'empleado_id' => $empleadoId,
+            'fecha' => $fecha->format('Y-m-d'),
+            'tipo' => 'entrada',
+            'hora' => $horaEntrada,
+        ]);
+
+        // Salida pausa comida (13:00-14:00)
+        $horaSalidaPausa = $this->generarHoraRandom(13, 0, 14, 0);
+        Fichaje::create([
+            'empleado_id' => $empleadoId,
+            'fecha' => $fecha->format('Y-m-d'),
+            'tipo' => 'salida',
+            'hora' => $horaSalidaPausa,
+        ]);
+
+        // Vuelta de pausa (14:00-15:00)
+        $horaVueltaPausa = $this->generarHoraRandom(14, 0, 15, 0);
+        Fichaje::create([
+            'empleado_id' => $empleadoId,
+            'fecha' => $fecha->format('Y-m-d'),
+            'tipo' => 'entrada',
+            'hora' => $horaVueltaPausa,
+        ]);
+
+        // Salida final (17:00-18:30)
+        $horaSalidaFinal = $this->generarHoraRandom(17, 0, 18, 30);
+        Fichaje::create([
+            'empleado_id' => $empleadoId,
+            'fecha' => $fecha->format('Y-m-d'),
+            'tipo' => 'salida',
+            'hora' => $horaSalidaFinal,
+        ]);
+    }
+
+    private function crearFichajesParciales($empleadoId, $fecha, $horaActual): void
+    {
+        // Siempre entrada inicial
+        $horaEntrada = $this->generarHoraRandom(8, 0, 9, 0);
+        Fichaje::create([
+            'empleado_id' => $empleadoId,
+            'fecha' => $fecha->format('Y-m-d'),
+            'tipo' => 'entrada',
+            'hora' => $horaEntrada,
+        ]);
+
+        // Si es después de las 13h, añadir pausa y vuelta
+        if ($horaActual >= 14) {
+            $horaSalidaPausa = $this->generarHoraRandom(13, 0, 14, 0);
+            Fichaje::create([
+                'empleado_id' => $empleadoId,
+                'fecha' => $fecha->format('Y-m-d'),
+                'tipo' => 'salida',
+                'hora' => $horaSalidaPausa,
+            ]);
+
+            $horaVueltaPausa = $this->generarHoraRandom(14, 0, 15, 0);
+            Fichaje::create([
+                'empleado_id' => $empleadoId,
+                'fecha' => $fecha->format('Y-m-d'),
+                'tipo' => 'entrada',
+                'hora' => $horaVueltaPausa,
+            ]);
+        }
+    }
+
+    private function generarHoraRandom($horaMin, $minMin, $horaMax, $minMax): string
+    {
+        $minutosMin = ($horaMin * 60) + $minMin;
+        $minutosMax = ($horaMax * 60) + $minMax;
+        $minutosRandom = rand($minutosMin, $minutosMax);
+
+        $hora = intdiv($minutosRandom, 60);
+        $minutos = $minutosRandom % 60;
+
+        return str_pad($hora, 2, '0', STR_PAD_LEFT) . ':' . str_pad($minutos, 2, '0', STR_PAD_LEFT);
     }
 }

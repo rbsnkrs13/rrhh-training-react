@@ -43,12 +43,11 @@ export default function Index({
     empleados = [],
     empleadoSeleccionado
 }: FichajesIndexProps) {
-    const handleFicharEntrada = () => {
-        router.post('/fichajes/entrada');
-    };
-
-    const handleFicharSalida = () => {
-        router.post('/fichajes/salida');
+    const handleEmpleadoChange = (empleadoId: string) => {
+        router.get('/admin/fichajes', { empleado_id: empleadoId }, {
+            preserveState: true,
+            preserveScroll: true,
+        });
     };
 
     const formatearHora = (hora: string) => {
@@ -64,9 +63,6 @@ export default function Index({
         return hoy?.horas_trabajadas || 0;
     };
 
-    const puedeEntrar = !tieneEntradaAbierta;
-    const puedeSalir = tieneEntradaAbierta;
-
     return (
         <AuthenticatedLayout>
             <Head title="Fichajes" />
@@ -75,7 +71,35 @@ export default function Index({
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <FlashMessage />
 
-                    {/* Fichaje de Hoy */}
+                    {/* Selector de Empleado */}
+                    <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
+                        <div className="p-6">
+                            <h3 className="text-lg font-medium text-gray-900 mb-4">Seleccionar Empleado</h3>
+                            <select
+                                value={empleadoSeleccionado || ''}
+                                onChange={(e) => handleEmpleadoChange(e.target.value)}
+                                className="w-full md:w-1/2 border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">-- Selecciona un empleado --</option>
+                                {empleados.map((emp) => (
+                                    <option key={emp.id} value={emp.id}>
+                                        {emp.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    </div>
+
+                    {!empleadoSeleccionado ? (
+                        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                            <div className="p-12 text-center text-gray-500">
+                                <Calendar className="w-16 h-16 mx-auto mb-4 text-gray-400" />
+                                <p className="text-lg">Selecciona un empleado para ver sus fichajes</p>
+                            </div>
+                        </div>
+                    ) : (
+                        <>
+                            {/* Fichaje de Hoy */}
                     <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg mb-6">
                         <div className="p-6">
                             <h3 className="text-lg font-medium text-gray-900 mb-4 flex items-center">
@@ -124,32 +148,6 @@ export default function Index({
                                 </div>
                             </div>
 
-                            {/* Botones de Acción */}
-                            <div className="mt-6 flex space-x-4">
-                                <button
-                                    onClick={handleFicharEntrada}
-                                    disabled={!puedeEntrar}
-                                    className={`px-6 py-2 rounded-md font-medium ${
-                                        puedeEntrar
-                                            ? 'bg-green-600 hover:bg-green-700 text-white'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
-                                >
-                                    Fichar Entrada
-                                </button>
-
-                                <button
-                                    onClick={handleFicharSalida}
-                                    disabled={!puedeSalir}
-                                    className={`px-6 py-2 rounded-md font-medium ${
-                                        puedeSalir
-                                            ? 'bg-red-600 hover:bg-red-700 text-white'
-                                            : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                    }`}
-                                >
-                                    Fichar Salida
-                                </button>
-                            </div>
                         </div>
                     </div>
 
@@ -194,12 +192,14 @@ export default function Index({
                                     <Calendar className="w-5 h-5 mr-2" />
                                     Fichajes del Mes
                                 </h3>
-                                <a
-                                    href="/fichajes/historial"
-                                    className="text-blue-600 hover:text-blue-700 text-sm font-medium"
-                                >
-                                    Ver historial completo
-                                </a>
+                                {empleadoSeleccionado && (
+                                    <a
+                                        href={`/admin/fichajes/historial?empleado_id=${empleadoSeleccionado}`}
+                                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                                    >
+                                        Ver historial completo
+                                    </a>
+                                )}
                             </div>
 
                             {fichajesDelMes.length > 0 ? (
@@ -268,6 +268,8 @@ export default function Index({
                             )}
                         </div>
                     </div>
+                        </>
+                    )}
                 </div>
             </div>
         </AuthenticatedLayout>

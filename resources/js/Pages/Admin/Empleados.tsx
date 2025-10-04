@@ -83,13 +83,13 @@ export default function Empleados({ empleados }: EmpleadosProps) {
 
                         <div className="flex space-x-3 mt-4 sm:mt-0">
                             <Link
-                                href="/empleados/create"
+                                href="/admin/empleados/create"
                                 className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                             >
                                 ➕ Nuevo Empleado
                             </Link>
                             <Link
-                                href="/"
+                                href="/admin/dashboard"
                                 className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors"
                             >
                                 ← Dashboard
@@ -279,7 +279,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
                                                         {/* Botones de acción */}
                                                         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                                                             <Link
-                                                                href={`/empleados/${empleado.id}/edit`}
+                                                                href={`/admin/empleados/${empleado.id}/edit`}
                                                                 className="px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors flex items-center space-x-2"
                                                                 onClick={e => e.stopPropagation()} // Evitar que se cierre al hacer clic
                                                             >
@@ -288,7 +288,7 @@ export default function Empleados({ empleados }: EmpleadosProps) {
                                                             </Link>
 
                                                             <Link
-                                                                href={`/empleados/${empleado.id}`}
+                                                                href={`/admin/empleados/${empleado.id}`}
                                                                 method="delete"
                                                                 as="button"
                                                                 className="px-4 py-2 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors flex items-center space-x-2"

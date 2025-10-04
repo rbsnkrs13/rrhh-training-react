@@ -102,7 +102,7 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                             {/* Tarjeta Fichajes */}
                             <a
-                                href="/fichajes"
+                                href="/admin/fichajes"
                                 className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-blue-300 group"
                             >
                                 <div className="flex items-center">
@@ -122,7 +122,7 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
 
                             {/* Tarjeta Nóminas */}
                             <a
-                                href="/nominas"
+                                href="/admin/nominas"
                                 className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-green-300 group"
                             >
                                 <div className="flex items-center">
@@ -142,7 +142,7 @@ export default function Dashboard({ empleadosIniciales, configuracion }: Dashboa
 
                             {/* Tarjeta Gestión Empleados */}
                             <a
-                                href="/empleados"
+                                href="/admin/empleados"
                                 className="bg-white p-6 rounded-lg shadow hover:shadow-md transition-shadow border border-gray-200 hover:border-purple-300 group"
                             >
                                 <div className="flex items-center">

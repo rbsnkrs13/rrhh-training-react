@@ -37,7 +37,7 @@ export default function CrearEmpleado() {
     const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
 
-        post(route('empleados.store'), {
+        post(route('admin.empleados.store'), {
             onSuccess: () => {
                 console.log('✅ Empleado creado en BD');
             },
@@ -56,7 +56,7 @@ export default function CrearEmpleado() {
                         </h1>
 
                         <Link
-                            href={route('empleados.index')}
+                            href={route('admin.empleados.index')}
                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                         >
                             ← Cancelar
@@ -248,7 +248,7 @@ export default function CrearEmpleado() {
                             {/* Botones */}
                             <div className="flex justify-end space-x-3 pt-6 border-t">
                                 <Link
-                                    href={route('empleados.index')}
+                                    href={route('admin.empleados.index')}
                                     className="px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50 transition-colors"
                                 >
                                     Cancelar

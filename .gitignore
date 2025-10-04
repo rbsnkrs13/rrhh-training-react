@@ -22,3 +22,7 @@
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Nóminas - Mantener HTMLs en repo, ignorar PDFs generados
+/storage/nominas_ejemplo/pdfs/*.pdf
+!/storage/nominas_ejemplo/pdfs/.gitkeep

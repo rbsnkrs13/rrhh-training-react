@@ -5,18 +5,21 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
 import { Calendar, Download, Filter, AlertCircle } from 'lucide-react';
 
-interface Fichaje {
+interface FichajeIndividual {
     id: number;
+    tipo: 'entrada' | 'salida';
+    hora: string;
+}
+
+interface FichajeDia {
     fecha: string;
-    hora_entrada: string | null;
-    hora_salida: string | null;
-    horas_trabajadas: number | null;
-    observaciones: string | null;
-    estado: 'completo' | 'incompleto' | 'pendiente';
+    fichajes: FichajeIndividual[];
+    horas_trabajadas: number;
+    tiene_entrada_abierta: boolean;
 }
 
 interface FichajesHistorialProps extends PageProps {
-    fichajes: Fichaje[];
+    fichajes: FichajeDia[];
     año: number;
     mes: number;
     añosDisponibles: number[];
@@ -54,16 +57,14 @@ export default function Historial({
     };
 
     const exportarCSV = () => {
-        const headers = ['Fecha', 'Entrada', 'Salida', 'Horas Trabajadas', 'Estado', 'Observaciones'];
+        const headers = ['Fecha', 'Fichajes', 'Horas Trabajadas', 'Estado'];
         const csvContent = [
             headers.join(','),
-            ...fichajes.map(fichaje => [
-                fichaje.fecha,
-                fichaje.hora_entrada || '',
-                fichaje.hora_salida || '',
-                fichaje.horas_trabajadas ? Number(fichaje.horas_trabajadas).toFixed(2) : '',
-                fichaje.estado,
-                (fichaje.observaciones || '').replace(/,/g, ';')
+            ...fichajes.map(dia => [
+                dia.fecha,
+                dia.fichajes.map(f => `${f.tipo}:${formatearHora(f.hora)}`).join(';'),
+                dia.horas_trabajadas.toFixed(2),
+                dia.tiene_entrada_abierta ? 'En curso' : 'Completo'
             ].join(','))
         ].join('\n');
 
@@ -76,19 +77,20 @@ export default function Historial({
         window.URL.revokeObjectURL(url);
     };
 
-    const formatearHora = (hora: string | null) => {
+    const formatearHora = (hora: string) => {
         if (!hora) return '--:--';
-        return hora.substring(0, 5);
+        const horaPart = hora.split('T')[1] || hora;
+        return horaPart.substring(0, 5);
     };
 
     const calcularEstadisticas = () => {
-        const completos = fichajes.filter(f => f.estado === 'completo');
-        const totalHoras = fichajes.reduce((sum, f) => sum + (f.horas_trabajadas || 0), 0);
+        const completos = fichajes.filter(f => !f.tiene_entrada_abierta);
+        const totalHoras = fichajes.reduce((sum, f) => sum + f.horas_trabajadas, 0);
 
         return {
             totalDias: fichajes.length,
             diasCompletos: completos.length,
-            diasIncompletos: fichajes.filter(f => f.estado === 'incompleto').length,
+            diasIncompletos: fichajes.filter(f => f.tiene_entrada_abierta).length,
             totalHoras: totalHoras,
             promedioHoras: completos.length > 0 ? totalHoras / completos.length : 0
         };
@@ -244,10 +246,7 @@ export default function Historial({
                                                     Día
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Entrada
-                                                </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Salida
+                                                    Fichajes
                                                 </th>
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Horas Trabajadas
@@ -255,47 +254,45 @@ export default function Historial({
                                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                                     Estado
                                                 </th>
-                                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                                    Observaciones
-                                                </th>
                                             </tr>
                                         </thead>
                                         <tbody className="bg-white divide-y divide-gray-200">
-                                            {fichajes.map((fichaje) => (
-                                                <tr key={fichaje.id} className="hover:bg-gray-50">
+                                            {fichajes.map((dia, index) => (
+                                                <tr key={index} className="hover:bg-gray-50">
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {new Date(fichaje.fecha).toLocaleDateString('es-ES')}
+                                                        {new Date(dia.fecha).toLocaleDateString('es-ES')}
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                        {new Date(fichaje.fecha).toLocaleDateString('es-ES', { weekday: 'short' })}
+                                                        {new Date(dia.fecha).toLocaleDateString('es-ES', { weekday: 'short' })}
+                                                    </td>
+                                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                                        <div className="flex flex-wrap gap-2">
+                                                            {dia.fichajes.map((f) => (
+                                                                <span
+                                                                    key={f.id}
+                                                                    className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
+                                                                        f.tipo === 'entrada'
+                                                                            ? 'bg-green-100 text-green-800'
+                                                                            : 'bg-red-100 text-red-800'
+                                                                    }`}
+                                                                >
+                                                                    {f.tipo === 'entrada' ? '→' : '←'} {formatearHora(f.hora)}
+                                                                </span>
+                                                            ))}
+                                                        </div>
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {formatearHora(fichaje.hora_entrada)}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {formatearHora(fichaje.hora_salida)}
-                                                    </td>
-                                                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                        {fichaje.horas_trabajadas ?
-                                                            `${Number(fichaje.horas_trabajadas).toFixed(2)}h` :
-                                                            '--'
-                                                        }
+                                                        {dia.horas_trabajadas.toFixed(1)}h
                                                     </td>
                                                     <td className="px-6 py-4 whitespace-nowrap">
                                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                                                            fichaje.estado === 'completo'
-                                                                ? 'bg-green-100 text-green-800'
-                                                                : fichaje.estado === 'incompleto'
+                                                            dia.tiene_entrada_abierta
                                                                 ? 'bg-yellow-100 text-yellow-800'
-                                                                : 'bg-gray-100 text-gray-800'
+                                                                : 'bg-green-100 text-green-800'
                                                         }`}>
-                                                            {fichaje.estado === 'incompleto' && <AlertCircle className="w-3 h-3 mr-1" />}
-                                                            {fichaje.estado === 'completo' ? 'Completo' :
-                                                             fichaje.estado === 'incompleto' ? 'Incompleto' : 'Pendiente'}
+                                                            {dia.tiene_entrada_abierta && <AlertCircle className="w-3 h-3 mr-1" />}
+                                                            {dia.tiene_entrada_abierta ? 'En curso' : 'Completo'}
                                                         </span>
-                                                    </td>
-                                                    <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
-                                                        {fichaje.observaciones || '--'}
                                                     </td>
                                                 </tr>
                                             ))}

@@ -41,7 +41,7 @@ export default function EditarEmpleado({ empleado }: EditarEmpleadoProps) {
     const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
 
-        put(`/empleados/${empleado.id}`, {
+        put(`/admin/empleados/${empleado.id}`, {
             onSuccess: () => {
                 console.log('✅ Empleado actualizado en BD');
             },
@@ -64,7 +64,7 @@ export default function EditarEmpleado({ empleado }: EditarEmpleadoProps) {
                         </div>
 
                         <Link
-                            href="/empleados"
+                            href="/admin/empleados"
                             className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600"
                         >
                             ← Cancelar

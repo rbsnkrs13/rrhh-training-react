@@ -14,16 +14,14 @@ class Fichaje extends Model
     protected $fillable = [
         'empleado_id',
         'fecha',
-        'hora_entrada',
-        'hora_salida',
-        'horas_trabajadas',
-        'observaciones',
-        'estado'
+        'tipo',
+        'hora',
+        'observaciones'
     ];
 
     protected $casts = [
         'fecha' => 'date',
-        'horas_trabajadas' => 'decimal:2'
+        'hora' => 'datetime:H:i'
     ];
 
     public function empleado(): BelongsTo
@@ -31,33 +29,44 @@ class Fichaje extends Model
         return $this->belongsTo(User::class, 'empleado_id');
     }
 
-    // Calcular horas trabajadas automáticamente
-    public function calcularHorasTrabajadas(): void
+    // Calcular horas trabajadas de un día (suma de intervalos entrada-salida)
+    public static function calcularHorasDia($empleadoId, $fecha): float
     {
-        if ($this->hora_entrada && $this->hora_salida) {
-            // Extraer solo la parte de hora si viene como timestamp
-            $horaEntrada = strlen($this->hora_entrada) > 5 ?
-                Carbon::parse($this->hora_entrada)->format('H:i') :
-                $this->hora_entrada;
-            $horaSalida = strlen($this->hora_salida) > 5 ?
-                Carbon::parse($this->hora_salida)->format('H:i') :
-                $this->hora_salida;
+        $fichajes = self::deEmpleado($empleadoId)
+            ->where('fecha', $fecha)
+            ->orderBy('hora')
+            ->get();
 
-            $entrada = Carbon::createFromFormat('H:i', $horaEntrada);
-            $salida = Carbon::createFromFormat('H:i', $horaSalida);
+        $totalMinutos = 0;
+        $ultimaEntrada = null;
 
-            // Si sale antes de entrar, asumimos que es el día siguiente
-            if ($salida->lt($entrada)) {
-                $salida->addDay();
+        foreach ($fichajes as $fichaje) {
+            if ($fichaje->tipo === 'entrada') {
+                $ultimaEntrada = Carbon::parse($fichaje->hora);
+            } elseif ($fichaje->tipo === 'salida' && $ultimaEntrada) {
+                $salida = Carbon::parse($fichaje->hora);
+                $totalMinutos += $ultimaEntrada->diffInMinutes($salida);
+                $ultimaEntrada = null;
             }
-
-            $this->horas_trabajadas = $salida->diffInMinutes($entrada) / 60;
-            $this->estado = 'completo';
-        } elseif ($this->hora_entrada) {
-            $this->estado = 'incompleto';
-        } else {
-            $this->estado = 'pendiente';
         }
+
+        return round($totalMinutos / 60, 2);
+    }
+
+    // Verificar si hay una entrada sin salida (fichaje abierto)
+    public static function tieneEntradaAbierta($empleadoId, $fecha): bool
+    {
+        $fichajes = self::deEmpleado($empleadoId)
+            ->where('fecha', $fecha)
+            ->orderBy('hora')
+            ->get();
+
+        $contador = 0;
+        foreach ($fichajes as $fichaje) {
+            $contador += ($fichaje->tipo === 'entrada') ? 1 : -1;
+        }
+
+        return $contador > 0;
     }
 
     // Scope para obtener fichajes de un empleado

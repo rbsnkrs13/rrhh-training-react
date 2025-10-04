@@ -32,28 +32,28 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
 
                             <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
                                 <NavLink
-                                    href="/"
-                                    active={window.location.pathname === '/' || window.location.pathname === '/empleado/dashboard'}
+                                    href={isAdmin ? "/admin/dashboard" : "/"}
+                                    active={window.location.pathname === '/' || window.location.pathname === '/empleado/dashboard' || window.location.pathname === '/admin/dashboard'}
                                 >
                                     Dashboard
                                 </NavLink>
                                 {isAdmin && (
                                     <NavLink
-                                        href="/empleados"
-                                        active={window.location.pathname.startsWith('/empleados')}
+                                        href="/admin/empleados"
+                                        active={window.location.pathname.startsWith('/admin/empleados')}
                                     >
                                         Empleados
                                     </NavLink>
                                 )}
                                 <NavLink
-                                    href="/fichajes"
-                                    active={window.location.pathname.startsWith('/fichajes')}
+                                    href={isAdmin ? "/admin/fichajes" : "/fichajes"}
+                                    active={window.location.pathname.startsWith('/fichajes') || window.location.pathname.startsWith('/admin/fichajes')}
                                 >
                                     Fichajes
                                 </NavLink>
                                 <NavLink
-                                    href="/nominas"
-                                    active={window.location.pathname.startsWith('/nominas')}
+                                    href={isAdmin ? "/admin/nominas" : "/mis-nominas"}
+                                    active={window.location.pathname.startsWith('/mis-nominas') || window.location.pathname.startsWith('/admin/nominas')}
                                 >
                                     Nóminas
                                 </NavLink>
@@ -143,28 +143,28 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
                 <div className={(showingNavigationDropdown ? 'block' : 'hidden') + ' sm:hidden'}>
                     <div className="space-y-1 pb-3 pt-2">
                         <ResponsiveNavLink
-                            href="/"
-                            active={window.location.pathname === '/' || window.location.pathname === '/empleado/dashboard'}
+                            href={isAdmin ? "/admin/dashboard" : "/"}
+                            active={window.location.pathname === '/' || window.location.pathname === '/empleado/dashboard' || window.location.pathname === '/admin/dashboard'}
                         >
                             Dashboard
                         </ResponsiveNavLink>
                         {isAdmin && (
                             <ResponsiveNavLink
-                                href="/empleados"
-                                active={window.location.pathname.startsWith('/empleados')}
+                                href="/admin/empleados"
+                                active={window.location.pathname.startsWith('/admin/empleados')}
                             >
                                 Empleados
                             </ResponsiveNavLink>
                         )}
                         <ResponsiveNavLink
-                            href="/fichajes"
-                            active={window.location.pathname.startsWith('/fichajes')}
+                            href={isAdmin ? "/admin/fichajes" : "/fichajes"}
+                            active={window.location.pathname.startsWith('/fichajes') || window.location.pathname.startsWith('/admin/fichajes')}
                         >
                             Fichajes
                         </ResponsiveNavLink>
                         <ResponsiveNavLink
-                            href="/nominas"
-                            active={window.location.pathname.startsWith('/nominas')}
+                            href={isAdmin ? "/admin/nominas" : "/mis-nominas"}
+                            active={window.location.pathname.startsWith('/mis-nominas') || window.location.pathname.startsWith('/admin/nominas')}
                         >
                             Nóminas
                         </ResponsiveNavLink>
