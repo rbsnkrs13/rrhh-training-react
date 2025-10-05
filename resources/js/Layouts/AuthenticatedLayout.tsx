@@ -2,14 +2,18 @@ import ApplicationLogo from '@/Components/Shared/Layout/ApplicationLogo';
 import Dropdown from '@/Components/Shared/Layout/Dropdown';
 import NavLink from '@/Components/Shared/Layout/NavLink';
 import ResponsiveNavLink from '@/Components/Shared/Layout/ResponsiveNavLink';
+import ChatButtonUser from '@/Components/User/Chat/ChatButtonUser';
+import ChatButtonAdmin from '@/Components/Admin/Chat/ChatButtonAdmin';
+import ChatPanel from '@/Components/User/Chat/ChatPanel';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { AuthenticatedLayoutProps, PageProps } from '@/types';
 
-export default function AuthenticatedLayout({ header, children }: AuthenticatedLayoutProps) {
+export default function AuthenticatedLayout({ header, children, hideChat = false }: AuthenticatedLayoutProps) {
     const { auth } = usePage<PageProps>().props;
     const user = auth?.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
+    const [chatPanelOpen, setChatPanelOpen] = useState(false);
 
     if (!user) {
         return null;
@@ -17,6 +21,17 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
 
     // Verificar si el usuario es admin
     const isAdmin = user.email === 'admin@empresa.com';
+
+    // Datos de ejemplo para el chat (luego vendrán del backend)
+    const mensajesEjemplo = [
+        { id: 1, mensaje: 'Hola, necesito ayuda con mi nómina', hora: '10:30', esPropio: true },
+        { id: 2, mensaje: '¡Hola! Claro, ¿en qué puedo ayudarte?', hora: '10:32', esPropio: false, nombreRemitente: 'Administración' },
+    ];
+
+    const handleEnviarMensaje = (mensaje: string) => {
+        console.log('Mensaje enviado:', mensaje);
+        // Aquí irá la lógica de envío
+    };
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -57,6 +72,14 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
                                 >
                                     Nóminas
                                 </NavLink>
+                                {isAdmin && (
+                                    <NavLink
+                                        href="/admin/mensajes"
+                                        active={window.location.pathname.startsWith('/admin/mensajes')}
+                                    >
+                                        Mensajes
+                                    </NavLink>
+                                )}
                             </div>
                         </div>
 
@@ -168,6 +191,14 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
                         >
                             Nóminas
                         </ResponsiveNavLink>
+                        {isAdmin && (
+                            <ResponsiveNavLink
+                                href="/admin/mensajes"
+                                active={window.location.pathname.startsWith('/admin/mensajes')}
+                            >
+                                Mensajes
+                            </ResponsiveNavLink>
+                        )}
                     </div>
 
                     <div className="border-t border-gray-200 pb-1 pt-4">
@@ -195,6 +226,25 @@ export default function AuthenticatedLayout({ header, children }: AuthenticatedL
             )}
 
             <main>{children}</main>
+
+            {/* Botones flotantes de chat */}
+            {!hideChat && (
+                <>
+                    {isAdmin ? (
+                        <ChatButtonAdmin mensajesNoLeidos={3} />
+                    ) : (
+                        <>
+                            <ChatButtonUser onClick={() => setChatPanelOpen(true)} mensajesNoLeidos={2} />
+                            <ChatPanel
+                                isOpen={chatPanelOpen}
+                                onCerrar={() => setChatPanelOpen(false)}
+                                mensajes={mensajesEjemplo}
+                                onEnviarMensaje={handleEnviarMensaje}
+                            />
+                        </>
+                    )}
+                </>
+            )}
         </div>
     );
 }

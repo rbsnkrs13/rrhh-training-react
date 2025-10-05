@@ -129,6 +129,7 @@ declare global {
 export interface AuthenticatedLayoutProps {
     header?: React.ReactNode;
     children: React.ReactNode;
+    hideChat?: boolean;
 }
 
 export interface GuestLayoutProps {

@@ -33,14 +33,29 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        return redirect()->intended($this->obtenerRutaDashboard());
+    }
+
+    /**
+     * Redirigir al dashboard correspondiente (usado también desde ruta raíz)
+     */
+    public function redirectToDashboard(): RedirectResponse
+    {
+        return redirect()->to($this->obtenerRutaDashboard());
+    }
+
+    /**
+     * Obtener ruta del dashboard según tipo de usuario
+     */
+    private function obtenerRutaDashboard(): string
+    {
         $user = Auth::user();
 
-        // Redirigir según el email del usuario (temporal)
         if ($user->email === 'admin@empresa.com') {
-            return redirect()->intended(route('admin.dashboard', absolute: false));
-        } else {
-            return redirect()->intended(route('dashboard', absolute: false));
+            return route('admin.dashboard', absolute: false);
         }
+
+        return route('dashboard', absolute: false);
     }
 
     /**
