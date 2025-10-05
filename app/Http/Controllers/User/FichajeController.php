@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use App\Services\FichajeService;
+use App\Services\User\FichajeService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -29,7 +29,7 @@ class FichajeController extends Controller
         $fichajesDelMes = $this->fichajeService->getFichajesDelMes($empleadoId);
         $estadisticas = $this->fichajeService->calcularEstadisticasMes($fichajesDelMes);
 
-        return Inertia::render('Fichajes/Index', [
+        return Inertia::render('Employee/Fichajes/Index', [
             'fichajesHoy' => $fichajesHoy,
             'tieneEntradaAbierta' => $tieneEntradaAbierta,
             'fichajesDelMes' => $fichajesDelMes,
@@ -71,7 +71,7 @@ class FichajeController extends Controller
             now()->addYear()->year
         );
 
-        return Inertia::render('Fichajes/Historial', [
+        return Inertia::render('Employee/Fichajes/Historial', [
             'fichajes' => $fichajes,
             'año' => $año,
             'mes' => $mes,

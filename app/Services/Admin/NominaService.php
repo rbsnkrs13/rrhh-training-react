@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Admin;
 
 use App\Models\Nomina;
 use App\Models\User;
@@ -25,6 +25,19 @@ class NominaService
                 'success' => false,
                 'error' => "No se pudo extraer el DNI del archivo: {$nombreArchivo}",
                 'archivo' => $nombreArchivo
+            ];
+        }
+
+        // Validar fecha del archivo con período seleccionado
+        $fechaArchivo = $this->extraerFechaArchivo($nombreArchivo);
+        if ($fechaArchivo && !$this->validarFechaArchivo($fechaArchivo, $año, $mes)) {
+            $mesArchivo = (int)substr($fechaArchivo, 4, 2);
+            $añoArchivo = (int)substr($fechaArchivo, 0, 4);
+            return [
+                'success' => false,
+                'error' => "El archivo {$nombreArchivo} es del período {$mesArchivo}/{$añoArchivo}, pero intentas subirlo como {$mes}/{$año}",
+                'archivo' => $nombreArchivo,
+                'dni' => $dni
             ];
         }
 
@@ -106,6 +119,35 @@ class NominaService
         }
 
         return null;
+    }
+
+    /**
+     * Extraer fecha del nombre del archivo (formato YYYYMM)
+     * Formatos soportados:
+     * - 12345678A_NombreApellido_202501.pdf → 202501
+     * - 12345678A_202501.pdf → 202501
+     */
+    private function extraerFechaArchivo(string $nombreArchivo): ?string
+    {
+        $sinExtension = pathinfo($nombreArchivo, PATHINFO_FILENAME);
+
+        // Buscar patrón de fecha al final: 6 dígitos (YYYYMM)
+        if (preg_match('/_(\d{6})$/', $sinExtension, $matches)) {
+            return $matches[1];
+        }
+
+        return null;
+    }
+
+    /**
+     * Validar que la fecha extraída del archivo coincida con año/mes seleccionado
+     */
+    private function validarFechaArchivo(string $fechaArchivo, int $año, int $mes): bool
+    {
+        $añoArchivo = (int)substr($fechaArchivo, 0, 4);
+        $mesArchivo = (int)substr($fechaArchivo, 4, 2);
+
+        return $añoArchivo === $año && $mesArchivo === $mes;
     }
 
     /**

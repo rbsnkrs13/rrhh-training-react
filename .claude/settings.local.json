@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(php artisan make:controller:*)"
+      "Bash(php artisan make:controller:*)",
+      "Bash(tree:*)",
+      "Bash(composer:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []

@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Services\FichajeService;
+use App\Services\User\FichajeService;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;

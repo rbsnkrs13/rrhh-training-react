@@ -7,6 +7,7 @@ import PrimaryButton from '@/Components/Common/PrimaryButton';
 import SecondaryButton from '@/Components/Common/SecondaryButton';
 import DangerButton from '@/Components/Common/DangerButton';
 import Modal from '@/Components/Common/Modal';
+import FlashMessage from '@/Components/Common/FlashMessage';
 
 interface Empleado {
     id: number;
@@ -72,6 +73,8 @@ export default function Index({ auth, nominas, empleados, año, mes, añosDispon
         deducciones_irpf: '',
         observaciones: ''
     });
+    const [cardFlipped, setCardFlipped] = useState<{ [key: number]: boolean }>({});
+    const [nominaExpandida, setNominaExpandida] = useState<number | null>(null);
 
     const meses = [
         'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -241,41 +244,141 @@ export default function Index({ auth, nominas, empleados, año, mes, añosDispon
         return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
     };
 
+    const toggleCard = (cardIndex: number) => {
+        setCardFlipped(prev => ({ ...prev, [cardIndex]: !prev[cardIndex] }));
+    };
+
+    // Calcular promedios para las tarjetas volteadas
+    const promedioNominas = estadisticas.total_nominas > 0 ? estadisticas.total_nominas / (mes ? 1 : 12) : 0;
+    const promedioBruto = estadisticas.total_nominas > 0 ? estadisticas.salario_bruto_total / estadisticas.total_nominas : 0;
+    const promedioNeto = estadisticas.total_nominas > 0 ? estadisticas.salario_neto_total / estadisticas.total_nominas : 0;
+
     return (
         <AuthenticatedLayout user={auth.user}>
             <Head title="Gestión de Nóminas" />
 
             <div className="py-12">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <FlashMessage />
+
                     {/* Header */}
                     <div className="mb-6 flex justify-between items-center">
                         <h1 className="text-3xl font-bold text-gray-900">Gestión de Nóminas</h1>
-                        <PrimaryButton onClick={() => setMostrarSubida(!mostrarSubida)}>
-                            <Upload className="w-4 h-4 mr-2" />
-                            {mostrarSubida ? 'Cerrar Subida' : 'Subir Nóminas'}
-                        </PrimaryButton>
+                        <div className="flex gap-3">
+                            <SecondaryButton onClick={() => window.location.href = route('admin.nominas.ejemplo.descargar-todas')}>
+                                <FileText className="w-4 h-4 mr-2" />
+                                Generar Nóminas
+                            </SecondaryButton>
+                            <PrimaryButton onClick={() => setMostrarSubida(!mostrarSubida)}>
+                                <Upload className="w-4 h-4 mr-2" />
+                                {mostrarSubida ? 'Cerrar Subida' : 'Subir Nóminas'}
+                            </PrimaryButton>
+                        </div>
                     </div>
 
-                    {/* Estadísticas */}
+                    {/* Estadísticas con efecto Flip */}
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <div className="text-sm text-gray-600">Total Nóminas</div>
-                            <div className="text-2xl font-bold text-gray-900">{estadisticas.total_nominas}</div>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <div className="text-sm text-gray-600">Empleados con Nómina</div>
-                            <div className="text-2xl font-bold text-gray-900">{estadisticas.total_empleados}</div>
-                        </div>
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <div className="text-sm text-gray-600">Total Bruto</div>
-                            <div className="text-2xl font-bold text-green-600">
-                                {estadisticas.salario_bruto_total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+                        {/* Card 1: Total Nóminas */}
+                        <div
+                            className="relative h-32 cursor-pointer"
+                            style={{ perspective: '1000px' }}
+                            onClick={() => toggleCard(0)}
+                        >
+                            <div
+                                className="absolute w-full h-full transition-all duration-500"
+                                style={{
+                                    transformStyle: 'preserve-3d',
+                                    transform: cardFlipped[0] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                            >
+                                <div className="absolute w-full h-full bg-white p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden' }}>
+                                    <div className="text-sm text-gray-600">Total Nóminas</div>
+                                    <div className="text-2xl font-bold text-gray-900">{estadisticas.total_nominas}</div>
+                                </div>
+                                <div className="absolute w-full h-full bg-indigo-600 p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                                    <div className="text-sm text-indigo-200">Promedio/Mes</div>
+                                    <div className="text-2xl font-bold text-white">{promedioNominas.toFixed(1)}</div>
+                                </div>
                             </div>
                         </div>
-                        <div className="bg-white p-6 rounded-lg shadow">
-                            <div className="text-sm text-gray-600">Total Neto</div>
-                            <div className="text-2xl font-bold text-blue-600">
-                                {estadisticas.salario_neto_total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+
+                        {/* Card 2: Empleados */}
+                        <div
+                            className="relative h-32 cursor-pointer"
+                            style={{ perspective: '1000px' }}
+                            onClick={() => toggleCard(1)}
+                        >
+                            <div
+                                className="absolute w-full h-full transition-all duration-500"
+                                style={{
+                                    transformStyle: 'preserve-3d',
+                                    transform: cardFlipped[1] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                            >
+                                <div className="absolute w-full h-full bg-white p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden' }}>
+                                    <div className="text-sm text-gray-600">Empleados con Nómina</div>
+                                    <div className="text-2xl font-bold text-gray-900">{estadisticas.total_empleados}</div>
+                                </div>
+                                <div className="absolute w-full h-full bg-purple-600 p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                                    <div className="text-sm text-purple-200">Cobertura</div>
+                                    <div className="text-2xl font-bold text-white">{((estadisticas.total_empleados / empleados.length) * 100).toFixed(0)}%</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Card 3: Total Bruto */}
+                        <div
+                            className="relative h-32 cursor-pointer"
+                            style={{ perspective: '1000px' }}
+                            onClick={() => toggleCard(2)}
+                        >
+                            <div
+                                className="absolute w-full h-full transition-all duration-500"
+                                style={{
+                                    transformStyle: 'preserve-3d',
+                                    transform: cardFlipped[2] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                            >
+                                <div className="absolute w-full h-full bg-white p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden' }}>
+                                    <div className="text-sm text-gray-600">Total Bruto</div>
+                                    <div className="text-2xl font-bold text-green-600">
+                                        {estadisticas.salario_bruto_total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+                                    </div>
+                                </div>
+                                <div className="absolute w-full h-full bg-green-600 p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                                    <div className="text-sm text-green-200">Promedio/Empleado</div>
+                                    <div className="text-2xl font-bold text-white">
+                                        {promedioBruto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Card 4: Total Neto */}
+                        <div
+                            className="relative h-32 cursor-pointer"
+                            style={{ perspective: '1000px' }}
+                            onClick={() => toggleCard(3)}
+                        >
+                            <div
+                                className="absolute w-full h-full transition-all duration-500"
+                                style={{
+                                    transformStyle: 'preserve-3d',
+                                    transform: cardFlipped[3] ? 'rotateY(180deg)' : 'rotateY(0deg)'
+                                }}
+                            >
+                                <div className="absolute w-full h-full bg-white p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden' }}>
+                                    <div className="text-sm text-gray-600">Total Neto</div>
+                                    <div className="text-2xl font-bold text-blue-600">
+                                        {estadisticas.salario_neto_total.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+                                    </div>
+                                </div>
+                                <div className="absolute w-full h-full bg-blue-600 p-6 rounded-lg shadow" style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                                    <div className="text-sm text-blue-200">Promedio/Empleado</div>
+                                    <div className="text-2xl font-bold text-white">
+                                        {promedioNeto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -453,93 +556,130 @@ export default function Index({ auth, nominas, empleados, año, mes, añosDispon
                         </div>
                     </div>
 
-                    {/* Tabla de Nóminas */}
+                    {/* Tabla Compacta de Nóminas con Expansión */}
                     <div className="bg-white rounded-lg shadow-sm overflow-hidden">
                         <div className="p-6 border-b border-gray-200">
                             <h2 className="text-lg font-semibold">Nóminas Registradas</h2>
+                            <p className="text-sm text-gray-500 mt-1">Haz clic en una fila para ver más detalles</p>
                         </div>
                         <div className="overflow-x-auto">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Empleado
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Período
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Archivo
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Salario Bruto
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Salario Neto
-                                        </th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                            Acciones
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {nominas.length === 0 ? (
-                                        <tr>
-                                            <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                                No hay nóminas registradas para los filtros seleccionados
-                                            </td>
-                                        </tr>
-                                    ) : (
-                                        nominas.map((nomina) => (
-                                            <tr key={nomina.id} className="hover:bg-gray-50">
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {nomina.empleado.name}
+                            {nominas.length === 0 ? (
+                                <div className="px-6 py-12 text-center text-gray-500">
+                                    No hay nóminas registradas para los filtros seleccionados
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-gray-200">
+                                    {nominas.map((nomina) => (
+                                        <div key={nomina.id} className="hover:bg-gray-50 transition-colors">
+                                            {/* Fila compacta */}
+                                            <div
+                                                className="px-6 py-4 cursor-pointer flex items-center justify-between group"
+                                                onClick={() => setNominaExpandida(nominaExpandida === nomina.id ? null : nomina.id)}
+                                            >
+                                                <div className="flex items-center space-x-6 flex-1">
+                                                    {/* Avatar */}
+                                                    <div className="flex-shrink-0">
+                                                        <div className="h-12 w-12 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                                            {nomina.empleado.name.charAt(0).toUpperCase()}
+                                                        </div>
                                                     </div>
-                                                    <div className="text-sm text-gray-500">{nomina.empleado.dni}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {nomina.nombre_mes} {nomina.año}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap">
-                                                    <div className="text-sm text-gray-900">{nomina.archivo_nombre}</div>
-                                                    <div className="text-xs text-gray-500">{formatBytes(nomina.archivo_tamaño)}</div>
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {nomina.salario_bruto ? `${nomina.salario_bruto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                                    {nomina.salario_neto ? `${nomina.salario_neto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
-                                                </td>
-                                                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                    <button
-                                                        onClick={() => abrirModalEdicion(nomina)}
-                                                        className="text-blue-600 hover:text-blue-900 inline-flex items-center"
-                                                        title="Editar datos"
-                                                    >
-                                                        <Edit className="w-4 h-4 mr-1" />
-                                                        Editar
-                                                    </button>
-                                                    <button
-                                                        onClick={() => descargarNomina(nomina.id)}
-                                                        className="text-indigo-600 hover:text-indigo-900 inline-flex items-center"
-                                                    >
-                                                        <Download className="w-4 h-4 mr-1" />
-                                                        Ver
-                                                    </button>
-                                                    <button
-                                                        onClick={() => eliminarNomina(nomina.id)}
-                                                        className="text-red-600 hover:text-red-900 inline-flex items-center"
-                                                    >
-                                                        <Trash2 className="w-4 h-4 mr-1" />
-                                                        Eliminar
-                                                    </button>
-                                                </td>
-                                            </tr>
-                                        ))
-                                    )}
-                                </tbody>
-                            </table>
+
+                                                    {/* Info empleado */}
+                                                    <div className="flex-1 min-w-0">
+                                                        <p className="text-base font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors">
+                                                            {nomina.empleado.name}
+                                                        </p>
+                                                        <p className="text-sm text-gray-500">{nomina.empleado.dni}</p>
+                                                    </div>
+
+                                                    {/* Período con badge */}
+                                                    <div className="hidden sm:flex items-center space-x-2">
+                                                        <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                                                            {nomina.nombre_mes} {nomina.año}
+                                                        </span>
+                                                    </div>
+
+                                                    {/* Salario con diseño mejorado */}
+                                                    <div className="hidden md:block text-right">
+                                                        <p className="text-lg font-bold text-green-600">
+                                                            {nomina.salario_neto ? `${nomina.salario_neto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
+                                                        </p>
+                                                        <p className="text-xs text-gray-500 font-medium">Salario Neto</p>
+                                                    </div>
+
+                                                    {/* Indicador expansión */}
+                                                    <div className="flex-shrink-0">
+                                                        <svg
+                                                            className={`h-5 w-5 text-gray-400 group-hover:text-indigo-600 transition-all ${nominaExpandida === nomina.id ? 'rotate-180' : ''}`}
+                                                            fill="none"
+                                                            viewBox="0 0 24 24"
+                                                            stroke="currentColor"
+                                                        >
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                        </svg>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Sección expandida */}
+                                            {nominaExpandida === nomina.id && (
+                                                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                                        <div>
+                                                            <p className="text-xs font-medium text-gray-500 uppercase">Archivo</p>
+                                                            <p className="text-sm text-gray-900 mt-1">{nomina.archivo_nombre}</p>
+                                                            <p className="text-xs text-gray-500">{formatBytes(nomina.archivo_tamaño)}</p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-medium text-gray-500 uppercase">Salario Bruto</p>
+                                                            <p className="text-sm text-gray-900 mt-1">
+                                                                {nomina.salario_bruto ? `${nomina.salario_bruto.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-medium text-gray-500 uppercase">Deducciones SS</p>
+                                                            <p className="text-sm text-gray-900 mt-1">
+                                                                {nomina.deducciones_ss ? `${nomina.deducciones_ss.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
+                                                            </p>
+                                                        </div>
+                                                        <div>
+                                                            <p className="text-xs font-medium text-gray-500 uppercase">Deducciones IRPF</p>
+                                                            <p className="text-sm text-gray-900 mt-1">
+                                                                {nomina.deducciones_irpf ? `${nomina.deducciones_irpf.toLocaleString('es-ES', { minimumFractionDigits: 2 })}€` : '-'}
+                                                            </p>
+                                                        </div>
+                                                        {nomina.observaciones && (
+                                                            <div className="md:col-span-2">
+                                                                <p className="text-xs font-medium text-gray-500 uppercase">Observaciones</p>
+                                                                <p className="text-sm text-gray-900 mt-1">{nomina.observaciones}</p>
+                                                            </div>
+                                                        )}
+                                                    </div>
+
+                                                    {/* Acciones */}
+                                                    <div className="flex space-x-2 pt-4 border-t border-gray-200">
+                                                        <SecondaryButton onClick={() => abrirModalEdicion(nomina)}>
+                                                            <Edit className="w-4 h-4 mr-1" />
+                                                            Editar
+                                                        </SecondaryButton>
+                                                        <SecondaryButton onClick={() => descargarNomina(nomina.id)}>
+                                                            <Download className="w-4 h-4 mr-1" />
+                                                            Descargar
+                                                        </SecondaryButton>
+                                                        <SecondaryButton
+                                                            onClick={() => eliminarNomina(nomina.id)}
+                                                            className="text-red-600 hover:text-red-700"
+                                                        >
+                                                            <Trash2 className="w-4 h-4 mr-1" />
+                                                            Eliminar
+                                                        </SecondaryButton>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
 

@@ -35,6 +35,10 @@ class Nomina extends Model
         'fecha_descarga' => 'datetime'
     ];
 
+    protected $appends = [
+        'nombre_mes'
+    ];
+
     public function empleado(): BelongsTo
     {
         return $this->belongsTo(User::class, 'empleado_id');

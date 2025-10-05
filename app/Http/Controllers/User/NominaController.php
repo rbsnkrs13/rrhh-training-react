@@ -43,7 +43,7 @@ class NominaController extends Controller
             'salario_neto_total' => $nominas->sum('salario_neto'),
         ];
 
-        return Inertia::render('Nominas/Index', [
+        return Inertia::render('Employee/Nominas/Index', [
             'nominas' => $nominas,
             'año' => $año,
             'añosDisponibles' => $añosDisponibles,

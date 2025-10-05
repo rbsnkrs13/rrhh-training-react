@@ -5,6 +5,7 @@ use App\Http\Controllers\Admin\EmpleadoController as AdminEmpleadoController;
 use App\Http\Controllers\Admin\FichajeController as AdminFichajeController;
 use App\Http\Controllers\Admin\FichajeDashboardController as AdminFichajeDashboardController;
 use App\Http\Controllers\Admin\NominaController as AdminNominaController;
+use App\Http\Controllers\Admin\NominaEjemploController;
 use App\Http\Controllers\User\FichajeController as UserFichajeController;
 use App\Http\Controllers\User\NominaController as UserNominaController;
 use App\Models\Empleado;
@@ -48,6 +49,9 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     Route::post('/nominas/subir-masivo', [AdminNominaController::class, 'subirMasivo'])->name('nominas.subir-masivo');
     Route::put('/nominas/{nomina}', [AdminNominaController::class, 'actualizar'])->name('nominas.actualizar');
     Route::delete('/nominas/{nomina}', [AdminNominaController::class, 'eliminar'])->name('nominas.eliminar');
+
+    // Nóminas ejemplo (generación automática)
+    Route::get('/nominas-ejemplo/descargar-todas', [NominaEjemploController::class, 'descargarTodas'])->name('nominas.ejemplo.descargar-todas');
 });
 
 // ============================================
