@@ -1,4 +1,4 @@
-import MetricCard from '@/Components/Dashboard/MetricCard';
+import MetricCard from '@/Components/Admin/Dashboard/MetricCard';
 import { useMemo } from 'react';
 import type { Metricas, MetricCardProps } from '@/types';
 

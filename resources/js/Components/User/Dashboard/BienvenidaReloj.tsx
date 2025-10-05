@@ -1,31 +1,17 @@
 import { Clock } from 'lucide-react';
+import { useReloj } from '@/Hooks/useReloj';
 
-interface Props {
+interface BienvenidaRelojProps {
     userName: string;
-    currentTime: Date;
 }
 
-export default function BienvenidaReloj({ userName, currentTime }: Props) {
-    const formatTime = (date: Date) => {
-        return date.toLocaleTimeString('es-ES', {
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-    };
-
-    const formatDate = (date: Date) => {
-        return date.toLocaleDateString('es-ES', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        });
-    };
+export default function BienvenidaReloj({ userName }: BienvenidaRelojProps) {
+    const { currentTime, formatTime, formatDate } = useReloj();
 
     return (
         <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div className="p-6">
-                <div className="flex items-center justify-between">
-                    {/* Saludo personalizado */}
+            <div className="p-6 flex items-center h-full">
+                <div className="flex items-center justify-between w-full">
                     <div>
                         <h3 className="text-lg font-medium text-gray-900">
                             ¡Hola, {userName}!
@@ -34,7 +20,6 @@ export default function BienvenidaReloj({ userName, currentTime }: Props) {
                             {formatDate(currentTime)}
                         </p>
                     </div>
-                    {/* Reloj en tiempo real */}
                     <div className="flex items-center text-2xl font-bold text-blue-600">
                         <Clock className="w-6 h-6 mr-2" />
                         {formatTime(currentTime)}

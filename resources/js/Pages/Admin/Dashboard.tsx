@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
-import FlipCard from '@/Components/Dashboard/FlipCard';
-import FichajesEstado from '@/Components/Dashboard/FichajesEstado';
-import UltimosFichajes from '@/Components/Dashboard/UltimosFichajes';
+import FlipCard from '@/Components/Admin/Dashboard/FlipCard';
+import FichajesEstado from '@/Components/Admin/Dashboard/FichajesEstado';
+import UltimosFichajes from '@/Components/Admin/Dashboard/UltimosFichajes';
 import { Clock, FileText, Users, AlertCircle, DollarSign, TrendingUp } from 'lucide-react';
 import type { PageProps } from '@/types';
 

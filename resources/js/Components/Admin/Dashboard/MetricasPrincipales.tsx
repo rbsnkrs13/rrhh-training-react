@@ -1,4 +1,4 @@
-import MetricCard from '@/Components/Dashboard/MetricCard';
+import MetricCard from '@/Components/Admin/Dashboard/MetricCard';
 import type { Metricas, Mes } from '@/types';
 
 interface MetricasPrincipalesProps {

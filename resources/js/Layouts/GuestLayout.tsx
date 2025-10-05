@@ -1,4 +1,4 @@
-import ApplicationLogo from '@/Components/Layout/ApplicationLogo';
+import ApplicationLogo from '@/Components/Shared/Layout/ApplicationLogo';
 import { Link } from '@inertiajs/react';
 import type { GuestLayoutProps } from '@/types';
 

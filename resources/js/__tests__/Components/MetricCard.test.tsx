@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import MetricCard from '@/Components/Dashboard/MetricCard';
+import MetricCard from '@/Components/Admin/Dashboard/MetricCard';
 
 describe('MetricCard', () => {
     const defaultProps = {

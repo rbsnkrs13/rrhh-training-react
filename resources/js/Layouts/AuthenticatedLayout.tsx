@@ -1,7 +1,7 @@
-import ApplicationLogo from '@/Components/Layout/ApplicationLogo';
-import Dropdown from '@/Components/Layout/Dropdown';
-import NavLink from '@/Components/Layout/NavLink';
-import ResponsiveNavLink from '@/Components/Layout/ResponsiveNavLink';
+import ApplicationLogo from '@/Components/Shared/Layout/ApplicationLogo';
+import Dropdown from '@/Components/Shared/Layout/Dropdown';
+import NavLink from '@/Components/Shared/Layout/NavLink';
+import ResponsiveNavLink from '@/Components/Shared/Layout/ResponsiveNavLink';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { AuthenticatedLayoutProps, PageProps } from '@/types';

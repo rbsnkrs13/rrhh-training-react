@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import PrimaryButton from '@/Components/Common/PrimaryButton';
+import PrimaryButton from '@/Components/Shared/Common/PrimaryButton';
 
 describe('PrimaryButton', () => {
     it('debe renderizar children correctamente', () => {

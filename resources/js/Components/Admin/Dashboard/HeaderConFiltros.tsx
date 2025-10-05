@@ -1,5 +1,5 @@
 import { ChevronDown } from 'lucide-react';
-import Dropdown from '@/Components/Layout/Dropdown';
+import Dropdown from '@/Components/Shared/Layout/Dropdown';
 import type { ConfiguracionDashboard, Mes } from '@/types';
 
 interface HeaderConFiltrosProps {

@@ -64,32 +64,81 @@ app/
     └── Nomina.php                    # Modelo nóminas con gestión archivos
 ```
 
-### Frontend (React) - Arquitectura Reestructurada
+### Frontend (React) - Arquitectura Modular Admin/User/Shared
 ```
 resources/js/
 ├── Components/
-│   ├── Common/                       # Componentes reutilizables
-│   │   ├── DangerButton.tsx
-│   │   ├── FlashMessage.tsx
-│   │   ├── InputError.tsx
-│   │   ├── InputLabel.tsx
-│   │   ├── Modal.tsx
-│   │   ├── PrimaryButton.tsx
-│   │   ├── SecondaryButton.tsx
-│   │   └── TextInput.tsx
-│   ├── Dashboard/                    # Componentes específicos dashboard
-│   │   ├── HeaderConFiltros.tsx      # Filtros año/mes + dropdown usuario
-│   │   ├── MetricasPrincipales.tsx   # KPIs principales
-│   │   ├── MetricasSecundarias.tsx   # Métricas adicionales
-│   │   ├── MetricCard.tsx            # Tarjetas métricas reutilizables
-│   │   └── SeccionDepartamentos.tsx  # Análisis departamental
-│   ├── Empleados/                    # Componentes gestión empleados
-│   │   └── FiltrosAvanzados.tsx      # Filtros multi-criterio empleados
-│   └── Layout/                       # Componentes navegación y layout
-│       ├── ApplicationLogo.tsx
-│       ├── Dropdown.tsx
-│       ├── NavLink.tsx
-│       └── ResponsiveNavLink.tsx
+│   ├── Admin/                        # 28 componentes exclusivos admin
+│   │   ├── Dashboard/                # 8 componentes dashboard admin
+│   │   │   ├── FichajesEstado.tsx
+│   │   │   ├── FlipCard.tsx
+│   │   │   ├── HeaderConFiltros.tsx
+│   │   │   ├── MetricasPrincipales.tsx
+│   │   │   ├── MetricasSecundarias.tsx
+│   │   │   ├── MetricCard.tsx
+│   │   │   ├── SeccionDepartamentos.tsx
+│   │   │   └── UltimosFichajes.tsx
+│   │   ├── Empleados/                # 8 componentes gestión empleados
+│   │   │   ├── FiltrosAvanzados.tsx
+│   │   │   ├── FormField.tsx
+│   │   │   ├── FormularioEmpleado.tsx
+│   │   │   ├── HeaderEmpleados.tsx
+│   │   │   ├── ListaEmpleados.tsx
+│   │   │   ├── SelectField.tsx
+│   │   │   ├── TarjetaEmpleado.tsx
+│   │   │   └── TextAreaField.tsx
+│   │   ├── Fichajes/                 # 4 componentes fichajes admin
+│   │   │   ├── FiltrosFichajes.tsx
+│   │   │   ├── KPICard.tsx
+│   │   │   ├── SelectorEmpleado.tsx
+│   │   │   └── TablaFichajes.tsx
+│   │   └── Nominas/                  # 8 componentes gestión nóminas
+│   │       ├── EstadisticasNominas.tsx
+│   │       ├── FiltroPeriodoNominas.tsx
+│   │       ├── FiltrosNominas.tsx
+│   │       ├── FlipCard.tsx
+│   │       ├── ListadoNominas.tsx
+│   │       ├── ModalEdicionNomina.tsx
+│   │       ├── PanelSubidaNominas.tsx
+│   │       └── TablaNominas.tsx
+│   ├── User/                         # 10 componentes vista empleado
+│   │   ├── Dashboard/                # 7 componentes dashboard empleado
+│   │   │   ├── BienvenidaReloj.tsx
+│   │   │   ├── EstadoFichaje.tsx
+│   │   │   ├── FichajeRapido.tsx
+│   │   │   ├── FichajesRecientes.tsx
+│   │   │   ├── InformacionPersonal.tsx
+│   │   │   ├── NominasRecientes.tsx
+│   │   │   └── ResumenSemanalHoras.tsx
+│   │   └── Fichajes/                 # 3 componentes fichaje empleado
+│   │       ├── BotonesFichaje.tsx
+│   │       ├── EstadisticasPeriodo.tsx
+│   │       └── FiltrosPeriodo.tsx
+│   └── Shared/                       # 20 componentes compartidos
+│       ├── Auth/                     # 5 componentes autenticación
+│       │   ├── EmailInput.tsx
+│       │   ├── LoginButton.tsx
+│       │   ├── LoginHeader.tsx
+│       │   ├── PasswordInput.tsx
+│       │   └── StatusMessage.tsx
+│       ├── Common/                   # 8 componentes reutilizables
+│       │   ├── DangerButton.tsx
+│       │   ├── FlashMessage.tsx
+│       │   ├── InputError.tsx
+│       │   ├── InputLabel.tsx
+│       │   ├── Modal.tsx
+│       │   ├── PrimaryButton.tsx
+│       │   ├── SecondaryButton.tsx
+│       │   └── TextInput.tsx
+│       ├── Fichajes/                 # 3 componentes fichajes compartidos
+│       │   ├── EstadisticasMes.tsx
+│       │   ├── ResumenFichajeHoy.tsx
+│       │   └── TablaHistorialFichajes.tsx
+│       └── Layout/                   # 4 componentes layout/navegación
+│           ├── ApplicationLogo.tsx
+│           ├── Dropdown.tsx
+│           ├── NavLink.tsx
+│           └── ResponsiveNavLink.tsx
 ├── Hooks/
 │   ├── useMetricas.ts                # useMemo para cálculos pesados
 │   ├── useDepartamentos.ts           # Optimización datos departamentales

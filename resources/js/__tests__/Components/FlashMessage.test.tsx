@@ -1,6 +1,6 @@
 import { render } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import FlashMessage from '@/Components/Common/FlashMessage';
+import FlashMessage from '@/Components/Shared/Common/FlashMessage';
 
 // Mock de usePage
 const mockUsePage = vi.fn();
