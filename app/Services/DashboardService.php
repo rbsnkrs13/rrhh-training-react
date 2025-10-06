@@ -81,7 +81,7 @@ class DashboardService
 
         return [
             'fichado' => $tieneEntradaAbierta,
-            'ultimaEntrada' => $ultimaEntrada ? $ultimaEntrada->hora : null,
+            'ultimaEntrada' => $ultimaEntrada ? Carbon::parse($ultimaEntrada->hora)->format('H:i') : null,
             'horasHoy' => $horasHoy
         ];
     }

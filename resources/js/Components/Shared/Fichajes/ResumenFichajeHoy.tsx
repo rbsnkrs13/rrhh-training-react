@@ -1,4 +1,5 @@
 import { Clock } from 'lucide-react';
+import { formatearHoras } from '@/Utils/formatHoras';
 
 interface FichajeIndividual {
     id: number;
@@ -60,7 +61,7 @@ export default function ResumenFichajeHoy({ fichajesHoy, tieneEntradaAbierta, ho
                     <div className="bg-gray-50 p-4 rounded-lg flex flex-col justify-center">
                         <div className="text-sm text-gray-500">Horas Trabajadas Hoy</div>
                         <div className="text-lg font-semibold mt-1">
-                            {horasHoy.toFixed(1)}h
+                            {formatearHoras(horasHoy)}
                         </div>
                     </div>
                 </div>

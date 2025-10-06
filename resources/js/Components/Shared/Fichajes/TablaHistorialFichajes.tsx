@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { Calendar, AlertCircle } from 'lucide-react';
 
 interface FichajeIndividual {
@@ -95,7 +96,7 @@ export default function TablaHistorialFichajes({ fichajes }: TablaHistorialFicha
                                         </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                                        {dia.horas_trabajadas.toFixed(1)}h
+                                        {formatearHoras(dia.horas_trabajadas)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${

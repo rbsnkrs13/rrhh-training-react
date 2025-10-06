@@ -49,7 +49,7 @@ export default function Index({
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
                     <FiltroPeriodoNominas añoActual={año} añosDisponibles={añosDisponibles} />
                     <EstadisticasNominas estadisticas={estadisticas} />
-                    <ListadoNominas nominas={nominas} año={año} />
+                    <ListadoNominas nominas={nominas} año={año} isEmployee={true} />
                 </div>
             </div>
         </AuthenticatedLayout>

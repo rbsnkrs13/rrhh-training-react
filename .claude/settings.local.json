@@ -4,7 +4,10 @@
       "Bash(php artisan make:controller:*)",
       "Bash(tree:*)",
       "Bash(composer:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(for:*)",
+      "Bash(do)",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

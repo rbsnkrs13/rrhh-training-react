@@ -1,6 +1,7 @@
-import { router } from '@inertiajs/react';
+import { useEffect, useState } from 'react';
 import { FileText, Download, Eye } from 'lucide-react';
 import { formatearSalario, formatearFecha } from '@/Utils/formatters';
+import ModalVerificarPassword from '@/Components/Shared/Nominas/ModalVerificarPassword';
 
 interface Nomina {
     id: number;
@@ -20,6 +21,7 @@ interface Nomina {
 interface ListadoNominasProps {
     nominas: Nomina[];
     año: number;
+    isEmployee?: boolean;
 }
 
 const getEstadoBadge = (estado: string) => {
@@ -41,9 +43,63 @@ const getEstadoBadge = (estado: string) => {
     };
 };
 
-export default function ListadoNominas({ nominas, año }: ListadoNominasProps) {
-    const descargarNomina = (nominaId: number) => {
-        router.get(`/nominas/${nominaId}/descargar`);
+export default function ListadoNominas({ nominas, año, isEmployee = false }: ListadoNominasProps) {
+    const [showModal, setShowModal] = useState(false);
+    const [passwordVerificada, setPasswordVerificada] = useState(false);
+    const [tiempoExpiracion, setTiempoExpiracion] = useState<number | null>(null);
+    const [nominaPendiente, setNominaPendiente] = useState<number | null>(null);
+
+    const obtenerUrlDescarga = (nominaId: number) => {
+        return isEmployee
+            ? `/mis-nominas/${nominaId}/descargar`
+            : `/nominas/${nominaId}/descargar`;
+    };
+
+    // Verificar si la sesión ha expirado cada 10 segundos (optimizado)
+    useEffect(() => {
+        if (!passwordVerificada || !tiempoExpiracion) return;
+
+        const interval = setInterval(() => {
+            const ahora = Date.now();
+            if (ahora >= tiempoExpiracion) {
+                setPasswordVerificada(false);
+                setTiempoExpiracion(null);
+            }
+        }, 10000); // Verificar cada 10 segundos en lugar de cada segundo
+
+        return () => clearInterval(interval);
+    }, [passwordVerificada, tiempoExpiracion]);
+
+    const handleDescargarClick = (e: React.MouseEvent<HTMLAnchorElement>, nominaId: number) => {
+        // Si no es empleado, permitir descarga directa (admin)
+        if (!isEmployee) return;
+
+        // Prevenir descarga directa para empleados
+        e.preventDefault();
+
+        // Verificar si la contraseña está verificada y no ha expirado
+        const ahora = Date.now();
+        if (passwordVerificada && tiempoExpiracion && ahora < tiempoExpiracion) {
+            // Contraseña válida, descargar directamente
+            window.location.href = obtenerUrlDescarga(nominaId);
+        } else {
+            // Mostrar modal de verificación
+            setNominaPendiente(nominaId);
+            setShowModal(true);
+        }
+    };
+
+    const handlePasswordVerificada = () => {
+        // Establecer expiración en 2 minutos (120 segundos)
+        const expiracion = Date.now() + 2 * 60 * 1000;
+        setPasswordVerificada(true);
+        setTiempoExpiracion(expiracion);
+
+        // Si hay una nómina pendiente de descarga, descargarla
+        if (nominaPendiente) {
+            window.location.href = obtenerUrlDescarga(nominaPendiente);
+            setNominaPendiente(null);
+        }
     };
 
     if (nominas.length === 0) {
@@ -144,13 +200,15 @@ export default function ListadoNominas({ nominas, año }: ListadoNominasProps) {
                                             {getEstadoBadge(nomina.estado).texto}
                                         </span>
 
-                                        <button
-                                            onClick={() => descargarNomina(nomina.id)}
-                                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        <a
+                                            href={obtenerUrlDescarga(nomina.id)}
+                                            download={isEmployee ? undefined : nomina.archivo_nombre}
+                                            onClick={(e) => handleDescargarClick(e, nomina.id)}
+                                            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 cursor-pointer"
                                         >
                                             <Download className="w-4 h-4 mr-2" />
                                             Descargar PDF
-                                        </button>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
@@ -158,6 +216,14 @@ export default function ListadoNominas({ nominas, año }: ListadoNominasProps) {
                     ))}
                 </div>
             </div>
+
+            {isEmployee && (
+                <ModalVerificarPassword
+                    show={showModal}
+                    onClose={() => setShowModal(false)}
+                    onVerificado={handlePasswordVerificada}
+                />
+            )}
         </div>
     );
 }

@@ -5,6 +5,7 @@ import FiltrosPeriodo from '@/Components/User/Fichajes/FiltrosPeriodo';
 import EstadisticasPeriodo from '@/Components/User/Fichajes/EstadisticasPeriodo';
 import TablaHistorialFichajes from '@/Components/Shared/Fichajes/TablaHistorialFichajes';
 import { useEstadisticasFichajes } from '@/Hooks/useEstadisticasFichajes';
+import { formatearHoras } from '@/Utils/formatHoras';
 
 interface FichajeIndividual {
     id: number;
@@ -47,7 +48,7 @@ export default function Historial({ fichajes, año, mes, añosDisponibles }: Fic
             ...fichajes.map(dia => [
                 dia.fecha,
                 dia.fichajes.map(f => `${f.tipo}:${formatearHora(f.hora)}`).join(';'),
-                dia.horas_trabajadas.toFixed(2),
+                formatearHoras(dia.horas_trabajadas),
                 dia.tiene_entrada_abierta ? 'En curso' : 'Completo'
             ].join(','))
         ].join('\n');

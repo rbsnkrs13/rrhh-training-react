@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { Download } from 'lucide-react';
 
 interface FichajeIndividual {
@@ -128,7 +129,7 @@ export default function TablaFichajes({ fichajes }: TablaFichajesProps) {
                                         )}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                        {fichaje.horas_trabajadas.toFixed(1)}h
+                                        {formatearHoras(fichaje.horas_trabajadas)}
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         {getEstadoBadge(fichaje.estado)}

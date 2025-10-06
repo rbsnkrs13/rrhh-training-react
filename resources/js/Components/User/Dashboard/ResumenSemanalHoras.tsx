@@ -1,3 +1,5 @@
+import { formatearHoras } from '@/Utils/formatHoras';
+
 interface Props {
     horasSemana: {
         trabajadas: number;
@@ -10,33 +12,30 @@ export default function ResumenSemanalHoras({ horasSemana }: Props) {
     const faltanHoras = horasSemana.objetivo - horasSemana.trabajadas;
 
     return (
-        <div className="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+        <div className="bg-white/80 backdrop-blur-sm overflow-hidden shadow-lg sm:rounded-xl border border-indigo-100">
             <div className="p-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-4">Horas esta Semana</h3>
+                <h3 className="text-lg font-semibold text-gray-800 mb-4">Horas esta Semana</h3>
                 <div>
-                    {/* Contador de horas */}
-                    <div className="flex justify-between items-center mb-2">
-                        <span className="text-2xl font-bold text-blue-600">
-                            {horasSemana.trabajadas}h
+                    <div className="flex justify-between items-center mb-3">
+                        <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                            {formatearHoras(horasSemana.trabajadas)}
                         </span>
-                        <span className="text-gray-600">
-                            / {horasSemana.objetivo}h
+                        <span className="text-gray-500 font-medium">
+                            / {formatearHoras(horasSemana.objetivo)}
                         </span>
                     </div>
 
-                    {/* Barra de progreso */}
-                    <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                         <div
-                            className="bg-blue-600 h-2 rounded-full"
+                            className="bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full transition-all duration-500 shadow-sm"
                             style={{ width: `${porcentaje}%` }}
                         ></div>
                     </div>
 
-                    {/* Mensaje informativo */}
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 mt-3 font-medium">
                         {faltanHoras > 0
-                            ? `Faltan ${faltanHoras.toFixed(1)}h`
-                            : 'Objetivo completado!'
+                            ? `Faltan ${formatearHoras(faltanHoras)} para completar`
+                            : '¡Objetivo completado! 🎉'
                         }
                     </p>
                 </div>

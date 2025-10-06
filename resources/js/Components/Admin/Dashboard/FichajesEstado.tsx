@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { Clock, Users, AlertTriangle } from 'lucide-react';
 
 interface FichajeEstado {
@@ -71,7 +72,7 @@ export default function FichajesEstado({ estado }: Props) {
                 <div className="flex items-center justify-between">
                     <span className="text-sm text-gray-600">Total horas trabajadas hoy:</span>
                     <span className="text-lg font-bold text-indigo-600">
-                        {estado.horas_hoy.toFixed(1)}h
+                        {formatearHoras(estado.horas_hoy)}
                     </span>
                 </div>
             </div>

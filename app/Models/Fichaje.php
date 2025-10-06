@@ -53,6 +53,23 @@ class Fichaje extends Model
         return round($totalMinutos / 60, 2);
     }
 
+    // Calcular horas trabajadas de un mes completo
+    public static function calcularHorasMes($empleadoId, $año, $mes): float
+    {
+        $fechas = self::deEmpleado($empleadoId)
+            ->whereYear('fecha', $año)
+            ->whereMonth('fecha', $mes)
+            ->distinct('fecha')
+            ->pluck('fecha');
+
+        $totalHoras = 0;
+        foreach ($fechas as $fecha) {
+            $totalHoras += self::calcularHorasDia($empleadoId, $fecha);
+        }
+
+        return round($totalHoras, 2);
+    }
+
     // Verificar si hay una entrada sin salida (fichaje abierto)
     public static function tieneEntradaAbierta($empleadoId, $fecha): bool
     {

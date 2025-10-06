@@ -1,4 +1,4 @@
-import { Head } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { User } from '@/types';
 import BienvenidaReloj from '@/Components/User/Dashboard/BienvenidaReloj';
@@ -57,20 +57,30 @@ export default function EmpleadoDashboard({
     estadoFichaje,
     horasSemana
 }: Props) {
+    const handleFichaje = (tipo: 'entrada' | 'salida') => {
+        if (tipo === 'entrada') {
+            router.post(route('fichajes.entrada'));
+        } else {
+            router.post(route('fichajes.salida'));
+        }
+    };
+
     return (
         <AuthenticatedLayout>
             <Head title="Panel de Empleado" />
 
-            <div className="py-12 bg-gray-50">
-                <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <BienvenidaReloj userName={auth.user.name} />
-                        <EstadoFichaje estadoFichaje={estadoFichaje} />
-                        <FichajeRapido fichado={estadoFichaje?.fichado || false} />
-                        {horasSemana && <ResumenSemanalHoras horasSemana={horasSemana} />}
-                        <NominasRecientes nominas={nominasRecientes} />
-                        <FichajesRecientes fichajes={fichajesRecientes} />
-                        {empleadoInfo && <InformacionPersonal empleado={empleadoInfo} />}
+            <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+                <div className="py-12">
+                    <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <BienvenidaReloj userName={auth.user.name} />
+                            <EstadoFichaje estadoFichaje={estadoFichaje} />
+                            <FichajeRapido estadoFichaje={estadoFichaje} onFichaje={handleFichaje} />
+                            {horasSemana && <ResumenSemanalHoras horasSemana={horasSemana} />}
+                            <NominasRecientes nominas={nominasRecientes} />
+                            <FichajesRecientes fichajes={fichajesRecientes} />
+                            {empleadoInfo && <InformacionPersonal empleado={empleadoInfo} />}
+                        </div>
                     </div>
                 </div>
             </div>

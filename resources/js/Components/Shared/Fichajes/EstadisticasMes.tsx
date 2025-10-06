@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { BarChart3 } from 'lucide-react';
 
 interface Estadisticas {
@@ -29,14 +30,14 @@ export default function EstadisticasMes({ estadisticas }: EstadisticasMesProps) 
 
                     <div className="bg-green-50 p-4 rounded-lg">
                         <div className="text-2xl font-bold text-green-600">
-                            {estadisticas.total_horas_mes.toFixed(1)}h
+                            {formatearHoras(estadisticas.total_horas_mes)}
                         </div>
                         <div className="text-sm text-gray-600">Total Horas</div>
                     </div>
 
                     <div className="bg-purple-50 p-4 rounded-lg">
                         <div className="text-2xl font-bold text-purple-600">
-                            {estadisticas.promedio_horas_dia.toFixed(1)}h
+                            {formatearHoras(estadisticas.promedio_horas_dia)}
                         </div>
                         <div className="text-sm text-gray-600">Promedio/Día</div>
                     </div>

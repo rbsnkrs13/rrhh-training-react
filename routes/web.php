@@ -66,6 +66,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Nóminas empleado
     Route::get('/mis-nominas', [UserNominaController::class, 'index'])->name('user.nominas.index');
+    Route::post('/mis-nominas/verificar-password', [UserNominaController::class, 'verificarPassword'])->name('user.nominas.verificar-password');
     Route::get('/mis-nominas/{nomina}/descargar', [UserNominaController::class, 'descargar'])->name('user.nominas.descargar');
 });
 

@@ -43,4 +43,16 @@ class Empleado extends Model
     {
         return $this->fecha_contratacion->diffInYears(now());
     }
+
+    // Relación con Contrato
+    public function contrato()
+    {
+        return $this->hasOne(Contrato::class, 'empleado_id');
+    }
+
+    // Relación con User
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id', 'id');
+    }
 }

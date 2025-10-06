@@ -51,8 +51,58 @@ class EmpleadoController extends Controller
     // Muestra los detalles de un empleado específico
     public function show(Empleado $empleado)
     {
-        return Inertia::render('VerEmpleado', [
-            'empleado' => $empleado
+        // Cargar relaciones necesarias
+        $empleado->load(['contrato', 'user']);
+
+        // Obtener últimos 30 fichajes
+        $fichajes = \App\Models\Fichaje::where('empleado_id', $empleado->id)
+            ->orderBy('fecha', 'desc')
+            ->orderBy('hora', 'desc')
+            ->limit(30)
+            ->get()
+            ->map(function($fichaje) {
+                return [
+                    'id' => $fichaje->id,
+                    'fecha' => $fichaje->fecha,
+                    'hora' => \Carbon\Carbon::parse($fichaje->hora)->format('H:i'),
+                    'tipo' => $fichaje->tipo,
+                ];
+            });
+
+        // Obtener nóminas
+        $nominas = \App\Models\Nomina::where('empleado_id', $empleado->id)
+            ->orderBy('año', 'desc')
+            ->orderBy('mes', 'desc')
+            ->limit(12)
+            ->get()
+            ->map(function($nomina) {
+                return [
+                    'id' => $nomina->id,
+                    'mes' => $nomina->mes,
+                    'año' => $nomina->año,
+                    'nombre_mes' => $nomina->nombre_mes,
+                    'salario_bruto' => $nomina->salario_bruto,
+                    'salario_neto' => $nomina->salario_neto,
+                    'estado' => $nomina->estado,
+                ];
+            });
+
+        // Calcular estadísticas
+        $estadisticas = [
+            'total_fichajes' => \App\Models\Fichaje::where('empleado_id', $empleado->id)->count(),
+            'horas_mes_actual' => \App\Models\Fichaje::calcularHorasMes($empleado->id, now()->year, now()->month),
+            'dias_trabajados_mes' => \App\Models\Fichaje::where('empleado_id', $empleado->id)
+                ->whereYear('fecha', now()->year)
+                ->whereMonth('fecha', now()->month)
+                ->distinct('fecha')
+                ->count('fecha'),
+        ];
+
+        return Inertia::render('Admin/Empleados/Ver', [
+            'empleado' => $empleado,
+            'fichajes' => $fichajes,
+            'nominas' => $nominas,
+            'estadisticas' => $estadisticas,
         ]);
     }
 

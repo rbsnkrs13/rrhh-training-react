@@ -140,6 +140,15 @@ export default function TarjetaEmpleado({ empleado, expandido, onToggle }: Tarje
 
                         <div className="flex justify-end space-x-3 pt-4 border-t border-gray-200">
                             <Link
+                                href={`/admin/empleados/${empleado.id}`}
+                                className="px-4 py-2 bg-indigo-500 text-white text-sm rounded-md hover:bg-indigo-600 transition-colors flex items-center space-x-2"
+                                onClick={e => e.stopPropagation()}
+                            >
+                                <span>👁️</span>
+                                <span>Ver detalles</span>
+                            </Link>
+
+                            <Link
                                 href={`/admin/empleados/${empleado.id}/edit`}
                                 className="px-4 py-2 bg-blue-500 text-white text-sm rounded-md hover:bg-blue-600 transition-colors flex items-center space-x-2"
                                 onClick={e => e.stopPropagation()}

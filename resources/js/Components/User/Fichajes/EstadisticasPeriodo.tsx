@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 interface Estadisticas {
     totalDias: number;
     diasCompletos: number;
@@ -43,14 +44,14 @@ export default function EstadisticasPeriodo({ estadisticas, titulo }: Estadistic
 
                     <div className="bg-purple-50 p-4 rounded-lg">
                         <div className="text-2xl font-bold text-purple-600">
-                            {estadisticas.totalHoras.toFixed(1)}h
+                            {formatearHoras(estadisticas.totalHoras)}
                         </div>
                         <div className="text-sm text-gray-600">Total Horas</div>
                     </div>
 
                     <div className="bg-indigo-50 p-4 rounded-lg">
                         <div className="text-2xl font-bold text-indigo-600">
-                            {estadisticas.promedioHoras.toFixed(1)}h
+                            {formatearHoras(estadisticas.promedioHoras)}
                         </div>
                         <div className="text-sm text-gray-600">Promedio/Día</div>
                     </div>

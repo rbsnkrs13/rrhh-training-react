@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { Head } from '@inertiajs/react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { PageProps } from '@/types';
@@ -76,7 +77,7 @@ export default function Dashboard({
                         />
                         <KPICard
                             icon={Clock}
-                            value={`${estadisticas.total_horas_hoy.toFixed(1)}h`}
+                            value={`${formatearHoras(estadisticas.total_horas_hoy)}`}
                             label="Horas Hoy"
                             color="green"
                         />
@@ -88,7 +89,7 @@ export default function Dashboard({
                         />
                         <KPICard
                             icon={TrendingUp}
-                            value={`${estadisticas.promedio_horas.toFixed(1)}h`}
+                            value={`${formatearHoras(estadisticas.promedio_horas)}`}
                             label="Promedio/Empleado"
                             color="purple"
                         />

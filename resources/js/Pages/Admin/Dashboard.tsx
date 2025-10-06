@@ -1,3 +1,4 @@
+import { formatearHoras } from '@/Utils/formatHoras';
 import { useState } from 'react';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout';
 import { Head } from '@inertiajs/react';
@@ -65,12 +66,12 @@ export default function Dashboard({
         <AuthenticatedLayout user={auth.user}>
             <Head title="Dashboard Admin" />
 
-            <div className="py-8">
+            <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8">
                 <div className="max-w-7xl mx-auto px-4">
-                    {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Dashboard Administrativo</h1>
-                        <p className="text-gray-600 mt-1">{configuracion.empresa} - v{configuracion.version}</p>
+                    {/* Header con color */}
+                    <div className="mb-8 bg-gradient-to-r from-slate-800 to-slate-900 rounded-2xl p-8 shadow-xl">
+                        <h1 className="text-4xl font-bold text-white">Dashboard Administrativo</h1>
+                        <p className="text-slate-300 mt-2 text-lg">{configuracion.empresa} - v{configuracion.version}</p>
                     </div>
 
                     {/* Métricas Principales con Flip */}
@@ -92,10 +93,10 @@ export default function Dashboard({
                             {/* Tarjeta 2: Media Horas/Empleado Mes */}
                             <FlipCard
                                 frontTitle="Media Horas/Emp Mes"
-                                frontValue={`${estadisticasFichajes.promedio_horas_mes.toFixed(1)}h`}
+                                frontValue={`${formatearHoras(estadisticasFichajes.promedio_horas_mes)}`}
                                 frontColor="text-green-600"
                                 backTitle="Media Horas Hoy"
-                                backValue={`${estadisticasFichajes.promedio_horas_hoy.toFixed(1)}h`}
+                                backValue={`${formatearHoras(estadisticasFichajes.promedio_horas_hoy)}`}
                                 backGradient="bg-gradient-to-br from-green-500 to-emerald-600"
                                 isFlipped={cardsFlipped['horas'] || false}
                                 onFlip={() => toggleCard('horas')}
@@ -135,24 +136,27 @@ export default function Dashboard({
                     {/* Grid de 2 columnas: Accesos Rápidos + Últimos Fichajes */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                         {/* Accesos Rápidos Mejorados */}
-                        <div className="bg-white rounded-lg shadow-md p-6">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Accesos Rápidos</h3>
+                        <div className="bg-white rounded-xl shadow-xl p-6 border-t-4 border-indigo-500">
+                            <h3 className="text-xl font-bold text-slate-800 mb-5 flex items-center">
+                                <span className="w-2 h-2 bg-indigo-500 rounded-full mr-2"></span>
+                                Accesos Rápidos
+                            </h3>
                             <div className="space-y-3">
                                 <a
                                     href="/admin/fichajes"
-                                    className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-blue-50 to-blue-100 hover:from-blue-100 hover:to-blue-200 transition-all group"
+                                    className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
                                 >
-                                    <div className="flex items-center space-x-3">
-                                        <div className="p-2 bg-blue-500 rounded-lg group-hover:bg-blue-600 transition-colors">
-                                            <Clock className="h-6 w-6 text-white" />
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                            <Clock className="h-7 w-7 text-white" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-gray-900">Fichajes</h4>
-                                            <p className="text-sm text-gray-600">Ver registro completo</p>
+                                            <h4 className="font-bold text-white text-lg">Fichajes</h4>
+                                            <p className="text-sm text-blue-100">Ver registro completo</p>
                                         </div>
                                     </div>
                                     {estadisticasFichajes.entradas_abiertas > 0 && (
-                                        <span className="px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full">
+                                        <span className="px-3 py-1.5 bg-red-500 text-white text-sm font-bold rounded-full shadow-lg">
                                             {estadisticasFichajes.entradas_abiertas}
                                         </span>
                                     )}
@@ -160,19 +164,19 @@ export default function Dashboard({
 
                                 <a
                                     href="/admin/nominas"
-                                    className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-green-50 to-green-100 hover:from-green-100 hover:to-green-200 transition-all group"
+                                    className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
                                 >
-                                    <div className="flex items-center space-x-3">
-                                        <div className="p-2 bg-green-500 rounded-lg group-hover:bg-green-600 transition-colors">
-                                            <FileText className="h-6 w-6 text-white" />
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                            <FileText className="h-7 w-7 text-white" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-gray-900">Nóminas</h4>
-                                            <p className="text-sm text-gray-600">Gestionar nóminas</p>
+                                            <h4 className="font-bold text-white text-lg">Nóminas</h4>
+                                            <p className="text-sm text-emerald-100">Gestionar nóminas</p>
                                         </div>
                                     </div>
                                     {estadisticasNominas.pendientes > 0 && (
-                                        <span className="px-2 py-1 bg-yellow-500 text-white text-xs font-bold rounded-full">
+                                        <span className="px-3 py-1.5 bg-amber-500 text-white text-sm font-bold rounded-full shadow-lg">
                                             {estadisticasNominas.pendientes}
                                         </span>
                                     )}
@@ -180,15 +184,15 @@ export default function Dashboard({
 
                                 <a
                                     href="/admin/empleados"
-                                    className="flex items-center justify-between p-4 rounded-lg bg-gradient-to-r from-purple-50 to-purple-100 hover:from-purple-100 hover:to-purple-200 transition-all group"
+                                    className="flex items-center justify-between p-5 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1"
                                 >
-                                    <div className="flex items-center space-x-3">
-                                        <div className="p-2 bg-purple-500 rounded-lg group-hover:bg-purple-600 transition-colors">
-                                            <Users className="h-6 w-6 text-white" />
+                                    <div className="flex items-center space-x-4">
+                                        <div className="p-3 bg-white/20 rounded-xl backdrop-blur-sm">
+                                            <Users className="h-7 w-7 text-white" />
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-gray-900">Empleados</h4>
-                                            <p className="text-sm text-gray-600">Gestionar plantilla</p>
+                                            <h4 className="font-bold text-white text-lg">Empleados</h4>
+                                            <p className="text-sm text-purple-100">Gestionar plantilla</p>
                                         </div>
                                     </div>
                                 </a>
