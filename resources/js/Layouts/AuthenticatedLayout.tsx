@@ -8,12 +8,14 @@ import ChatPanel from '@/Components/User/Chat/ChatPanel';
 import { Link, usePage } from '@inertiajs/react';
 import { useState } from 'react';
 import type { AuthenticatedLayoutProps, PageProps } from '@/types';
+import useChat from '@/Hooks/useChat';
 
 export default function AuthenticatedLayout({ header, children, hideChat = false }: AuthenticatedLayoutProps) {
     const { auth } = usePage<PageProps>().props;
     const user = auth?.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [chatPanelOpen, setChatPanelOpen] = useState(false);
+    const { mensajesNoLeidos } = useChat();
 
     if (!user) {
         return null;
@@ -22,16 +24,8 @@ export default function AuthenticatedLayout({ header, children, hideChat = false
     // Verificar si el usuario es admin
     const isAdmin = user.email === 'admin@empresa.com';
 
-    // Datos de ejemplo para el chat (luego vendrán del backend)
-    const mensajesEjemplo = [
-        { id: 1, mensaje: 'Hola, necesito ayuda con mi nómina', hora: '10:30', esPropio: true },
-        { id: 2, mensaje: '¡Hola! Claro, ¿en qué puedo ayudarte?', hora: '10:32', esPropio: false, nombreRemitente: 'Administración' },
-    ];
-
-    const handleEnviarMensaje = (mensaje: string) => {
-        console.log('Mensaje enviado:', mensaje);
-        // Aquí irá la lógica de envío
-    };
+    // ID del admin (hardcoded, idealmente vendría del backend)
+    const ADMIN_ID = 1;
 
     return (
         <div className="min-h-screen bg-gray-100">
@@ -234,12 +228,11 @@ export default function AuthenticatedLayout({ header, children, hideChat = false
                         <ChatButtonAdmin mensajesNoLeidos={3} />
                     ) : (
                         <>
-                            <ChatButtonUser onClick={() => setChatPanelOpen(true)} mensajesNoLeidos={2} />
+                            <ChatButtonUser onClick={() => setChatPanelOpen(true)} mensajesNoLeidos={mensajesNoLeidos} />
                             <ChatPanel
                                 isOpen={chatPanelOpen}
                                 onCerrar={() => setChatPanelOpen(false)}
-                                mensajes={mensajesEjemplo}
-                                onEnviarMensaje={handleEnviarMensaje}
+                                adminId={ADMIN_ID}
                             />
                         </>
                     )}

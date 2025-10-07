@@ -123,6 +123,13 @@ declare global {
         has(name: string): boolean;
         params(): { [key: string]: any };
     };
+
+    // Laravel Echo types
+    interface Window {
+        Echo: any;
+        Pusher: any;
+        axios: any;
+    }
 }
 
 // Tipos para layouts y páginas

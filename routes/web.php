@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\FichajeDashboardController as AdminFichajeDashboa
 use App\Http\Controllers\Admin\NominaController as AdminNominaController;
 use App\Http\Controllers\Admin\NominaEjemploController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\FichajeController as UserFichajeController;
 use App\Http\Controllers\User\NominaController as UserNominaController;
@@ -68,6 +69,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/mis-nominas', [UserNominaController::class, 'index'])->name('user.nominas.index');
     Route::post('/mis-nominas/verificar-password', [UserNominaController::class, 'verificarPassword'])->name('user.nominas.verificar-password');
     Route::get('/mis-nominas/{nomina}/descargar', [UserNominaController::class, 'descargar'])->name('user.nominas.descargar');
+
+    // API Mensajes/Chat (accesible por admin y empleados)
+    Route::prefix('api/messages')->name('api.messages.')->group(function () {
+        Route::get('/conversations', [MessageController::class, 'getConversations'])->name('conversations');
+        Route::get('/messages/{userId}', [MessageController::class, 'getMessages'])->name('get');
+        Route::post('/send', [MessageController::class, 'sendMessage'])->name('send');
+        Route::get('/unread-count', [MessageController::class, 'getUnreadCount'])->name('unread-count');
+        Route::post('/mark-read/{senderId}', [MessageController::class, 'markAllAsRead'])->name('mark-read');
+    });
 });
 
 require __DIR__.'/auth.php';

@@ -1,40 +1,63 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import HeaderChat from '@/Components/Shared/Chat/HeaderChat';
 import BurbujaMensaje from '@/Components/Shared/Chat/BurbujaMensaje';
 import InputMensaje from '@/Components/Shared/Chat/InputMensaje';
-
-interface Mensaje {
-    id: number;
-    mensaje: string;
-    hora: string;
-    esPropio: boolean;
-    nombreRemitente?: string;
-}
+import useChat from '@/Hooks/useChat';
 
 interface ChatPanelProps {
     isOpen: boolean;
     onCerrar: () => void;
-    mensajes?: Mensaje[];
-    onEnviarMensaje: (mensaje: string) => void;
+    adminId: number; // ID del admin para enviar mensajes
 }
 
 export default function ChatPanel({
     isOpen,
     onCerrar,
-    mensajes = [],
-    onEnviarMensaje
+    adminId
 }: ChatPanelProps) {
     const mensajesEndRef = useRef<HTMLDivElement>(null);
+    const {
+        mensajes,
+        cargarMensajes,
+        enviarMensaje,
+        suscribirseAMensajes,
+        desuscribirseAMensajes
+    } = useChat();
 
     const scrollToBottom = () => {
         mensajesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Cargar mensajes y suscribirse cuando se abre el chat
+    useEffect(() => {
+        if (isOpen && adminId) {
+            cargarMensajes(adminId);
+            suscribirseAMensajes();
+        }
+
+        // Cleanup: desuscribirse cuando se cierra
+        return () => {
+            if (isOpen) {
+                desuscribirseAMensajes();
+            }
+        };
+    }, [isOpen, adminId]);
+
+    // Scroll automático cuando llegan mensajes
     useEffect(() => {
         if (isOpen) {
             scrollToBottom();
         }
     }, [mensajes, isOpen]);
+
+    // Handler para enviar mensaje
+    const handleEnviarMensaje = async (mensaje: string) => {
+        try {
+            await enviarMensaje(adminId, mensaje);
+        } catch (error) {
+            console.error('Error al enviar mensaje:', error);
+        }
+    };
 
     return (
         <>
@@ -84,7 +107,7 @@ export default function ChatPanel({
 
                     {/* Input */}
                     <InputMensaje
-                        onEnviar={onEnviarMensaje}
+                        onEnviar={handleEnviarMensaje}
                         placeholder="Escribe tu consulta..."
                     />
                 </div>
