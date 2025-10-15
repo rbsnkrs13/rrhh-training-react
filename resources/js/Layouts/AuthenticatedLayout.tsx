@@ -235,7 +235,7 @@ export default function AuthenticatedLayout({ header, children, hideChat = false
             {!hideChat && (
                 <>
                     {isAdmin ? (
-                        <ChatButtonAdmin mensajesNoLeidos={3} />
+                        <ChatButtonAdmin mensajesNoLeidos={mensajesNoLeidos} />
                     ) : (
                         <>
                             <ChatButtonUser onClick={() => setChatPanelOpen(true)} mensajesNoLeidos={mensajesNoLeidos} />

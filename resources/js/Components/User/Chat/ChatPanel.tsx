@@ -19,29 +19,19 @@ export default function ChatPanel({
     const {
         mensajes,
         cargarMensajes,
-        enviarMensaje,
-        suscribirseAMensajes,
-        desuscribirseAMensajes
+        enviarMensaje
     } = useChat();
 
     const scrollToBottom = () => {
         mensajesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
     };
 
-    // Cargar mensajes y suscribirse cuando se abre el chat
+    // Cargar mensajes cuando se abre el chat
     useEffect(() => {
         if (isOpen && adminId) {
             cargarMensajes(adminId);
-            suscribirseAMensajes();
         }
-
-        // Cleanup: desuscribirse cuando se cierra
-        return () => {
-            if (isOpen) {
-                desuscribirseAMensajes();
-            }
-        };
-    }, [isOpen, adminId]);
+    }, [isOpen, adminId, cargarMensajes]);
 
     // Scroll automático cuando llegan mensajes
     useEffect(() => {

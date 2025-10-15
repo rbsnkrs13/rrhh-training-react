@@ -105,14 +105,17 @@ export default function useChat(): UseChatReturn {
      */
     const suscribirseAMensajes = useCallback(() => {
         if (!userId || !window.Echo) {
-            console.warn('Echo no está disponible o userId no está definido');
+            console.warn('⚠️ Echo no está disponible o userId no está definido');
             return;
         }
+
+        // Desuscribirse primero para evitar listeners duplicados
+        window.Echo.leave(`chat.${userId}`);
 
         // Suscribirse al canal privado del usuario actual
         window.Echo.private(`chat.${userId}`)
             .listen('.message.sent', (event: any) => {
-                console.log('Mensaje recibido via WebSocket:', event);
+                console.log('✅ Mensaje recibido via WebSocket:', event);
 
                 // Agregar mensaje a la lista
                 const nuevoMensaje: Mensaje = {
@@ -126,7 +129,18 @@ export default function useChat(): UseChatReturn {
                     nombreRemitente: event.sender?.name,
                 };
 
-                setMensajes((prev) => [...prev, nuevoMensaje]);
+                // IMPORTANTE: Agregar mensaje evitando duplicados
+                setMensajes((prev) => {
+                    // Evitar duplicados
+                    const existe = prev.some(m => m.id === nuevoMensaje.id);
+                    if (existe) {
+                        console.log('⚠️ Mensaje duplicado, ignorando');
+                        return prev;
+                    }
+
+                    console.log('✅ Mensaje agregado al estado');
+                    return [...prev, nuevoMensaje];
+                });
 
                 // Actualizar contador de no leídos
                 setMensajesNoLeidos((prev) => prev + 1);
@@ -135,7 +149,7 @@ export default function useChat(): UseChatReturn {
                 cargarConversaciones();
             });
 
-        console.log(`Suscrito al canal: chat.${userId}`);
+        console.log(`✅ Suscrito al canal: chat.${userId}`);
     }, [userId, cargarConversaciones]);
 
     /**

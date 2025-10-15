@@ -12,20 +12,13 @@ export default function Mensajes() {
         mensajes,
         cargarConversaciones,
         cargarMensajes,
-        enviarMensaje,
-        suscribirseAMensajes,
-        desuscribirseAMensajes
+        enviarMensaje
     } = useChat();
 
     // Cargar conversaciones al montar
     useEffect(() => {
         cargarConversaciones();
-        suscribirseAMensajes();
-
-        return () => {
-            desuscribirseAMensajes();
-        };
-    }, []);
+    }, [cargarConversaciones]);
 
     // Cargar mensajes cuando se selecciona una conversación
     const handleSeleccionarConversacion = (empleadoId: number) => {
