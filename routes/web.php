@@ -11,12 +11,18 @@ use App\Http\Controllers\MessageController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\FichajeController as UserFichajeController;
 use App\Http\Controllers\User\NominaController as UserNominaController;
+use Illuminate\Support\Facades\Broadcast;
 use Illuminate\Support\Facades\Route;
 
 // ============================================
 // RUTA RAÍZ - Redirección según tipo de usuario
 // ============================================
 Route::get('/', [AuthenticatedSessionController::class, 'redirectToDashboard'])->middleware(['auth']);
+
+// ============================================
+// BROADCASTING - Autenticación canales privados
+// ============================================
+Broadcast::routes(['middleware' => ['web', 'auth']]);
 
 // ============================================
 // RUTAS ADMIN - Solo accesibles por administradores

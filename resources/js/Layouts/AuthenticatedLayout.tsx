@@ -6,7 +6,7 @@ import ChatButtonUser from '@/Components/User/Chat/ChatButtonUser';
 import ChatButtonAdmin from '@/Components/Admin/Chat/ChatButtonAdmin';
 import ChatPanel from '@/Components/User/Chat/ChatPanel';
 import { Link, usePage } from '@inertiajs/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import type { AuthenticatedLayoutProps, PageProps } from '@/types';
 import useChat from '@/Hooks/useChat';
 
@@ -15,7 +15,17 @@ export default function AuthenticatedLayout({ header, children, hideChat = false
     const user = auth?.user;
     const [showingNavigationDropdown, setShowingNavigationDropdown] = useState(false);
     const [chatPanelOpen, setChatPanelOpen] = useState(false);
-    const { mensajesNoLeidos } = useChat();
+    const { mensajesNoLeidos, suscribirseAMensajes, desuscribirseAMensajes } = useChat();
+
+    // Suscribirse a mensajes globalmente cuando el layout se monta
+    useEffect(() => {
+        suscribirseAMensajes();
+
+        // Cleanup: desuscribirse al desmontar
+        return () => {
+            desuscribirseAMensajes();
+        };
+    }, [suscribirseAMensajes, desuscribirseAMensajes]);
 
     if (!user) {
         return null;
