@@ -7,7 +7,7 @@ use App\Http\Controllers\Admin\FichajeDashboardController as AdminFichajeDashboa
 use App\Http\Controllers\Admin\NominaController as AdminNominaController;
 use App\Http\Controllers\Admin\NominaEjemploController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
-use App\Http\Controllers\MessageController;
+use App\Http\Controllers\Shared\MessageController;
 use App\Http\Controllers\User\DashboardController as UserDashboardController;
 use App\Http\Controllers\User\FichajeController as UserFichajeController;
 use App\Http\Controllers\User\NominaController as UserNominaController;

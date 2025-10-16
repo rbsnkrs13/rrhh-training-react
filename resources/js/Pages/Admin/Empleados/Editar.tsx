@@ -21,11 +21,7 @@ export default function EditarEmpleado({ empleado }: EditarEmpleadoProps) {
 
     const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
-        put(`/admin/empleados/${empleado.id}`, {
-            onSuccess: () => {
-                console.log('✅ Empleado actualizado en BD');
-            },
-        });
+        put(`/admin/empleados/${empleado.id}`);
     };
 
     return (

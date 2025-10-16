@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Shared;
 
-use App\Services\MessageService;
+use App\Http\Controllers\Controller;
+use App\Services\Shared\MessageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 

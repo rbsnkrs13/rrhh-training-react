@@ -16,11 +16,7 @@ export default function CrearEmpleado() {
 
     const enviarFormulario = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('admin.empleados.store'), {
-            onSuccess: () => {
-                console.log('✅ Empleado creado en BD');
-            },
-        });
+        post(route('admin.empleados.store'));
     };
 
     return (

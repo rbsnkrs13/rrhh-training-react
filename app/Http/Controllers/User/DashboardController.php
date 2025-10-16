@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Services\DashboardService;
+use App\Services\User\DashboardService;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;

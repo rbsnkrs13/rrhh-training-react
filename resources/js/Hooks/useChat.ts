@@ -105,7 +105,6 @@ export default function useChat(): UseChatReturn {
      */
     const suscribirseAMensajes = useCallback(() => {
         if (!userId || !window.Echo) {
-            console.warn('⚠️ Echo no está disponible o userId no está definido');
             return;
         }
 
@@ -115,8 +114,6 @@ export default function useChat(): UseChatReturn {
         // Suscribirse al canal privado del usuario actual
         window.Echo.private(`chat.${userId}`)
             .listen('.message.sent', (event: any) => {
-                console.log('✅ Mensaje recibido via WebSocket:', event);
-
                 // Agregar mensaje a la lista
                 const nuevoMensaje: Mensaje = {
                     id: event.id,
@@ -129,16 +126,11 @@ export default function useChat(): UseChatReturn {
                     nombreRemitente: event.sender?.name,
                 };
 
-                // IMPORTANTE: Agregar mensaje evitando duplicados
+                // Agregar mensaje evitando duplicados
                 setMensajes((prev) => {
-                    // Evitar duplicados
                     const existe = prev.some(m => m.id === nuevoMensaje.id);
-                    if (existe) {
-                        console.log('⚠️ Mensaje duplicado, ignorando');
-                        return prev;
-                    }
+                    if (existe) return prev;
 
-                    console.log('✅ Mensaje agregado al estado');
                     return [...prev, nuevoMensaje];
                 });
 
@@ -148,8 +140,6 @@ export default function useChat(): UseChatReturn {
                 // Recargar conversaciones para actualizar "último mensaje"
                 cargarConversaciones();
             });
-
-        console.log(`✅ Suscrito al canal: chat.${userId}`);
     }, [userId, cargarConversaciones]);
 
     /**
@@ -159,7 +149,6 @@ export default function useChat(): UseChatReturn {
         if (!userId || !window.Echo) return;
 
         window.Echo.leave(`chat.${userId}`);
-        console.log(`Desuscrito del canal: chat.${userId}`);
     }, [userId]);
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Shared;
 
 use App\Events\MessageSent;
 use App\Models\Message;
@@ -171,23 +171,9 @@ class MessageService
     }
 
     /**
-     * Marcar mensajes de una conversación como leídos
+     * Marcar mensajes de un remitente como leídos
      */
-    public function markConversationAsRead(User $currentUser, int $otherUserId): void
-    {
-        Message::where('receiver_id', $currentUser->id)
-            ->where('sender_id', $otherUserId)
-            ->where('is_read', false)
-            ->update([
-                'is_read' => true,
-                'read_at' => now(),
-            ]);
-    }
-
-    /**
-     * Marcar todos los mensajes de un remitente como leídos
-     */
-    public function markAllFromSenderAsRead(User $receiver, int $senderId): void
+    public function markConversationAsRead(User $receiver, int $senderId): void
     {
         Message::where('receiver_id', $receiver->id)
             ->where('sender_id', $senderId)
@@ -196,5 +182,13 @@ class MessageService
                 'is_read' => true,
                 'read_at' => now(),
             ]);
+    }
+
+    /**
+     * Alias para compatibilidad
+     */
+    public function markAllFromSenderAsRead(User $receiver, int $senderId): void
+    {
+        $this->markConversationAsRead($receiver, $senderId);
     }
 }

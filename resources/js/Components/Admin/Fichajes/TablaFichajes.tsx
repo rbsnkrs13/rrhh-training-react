@@ -43,7 +43,7 @@ export default function TablaFichajes({ fichajes }: TablaFichajesProps) {
     };
 
     const handleExportarCSV = () => {
-        console.log('Exportar CSV');
+        // TODO: Implementar exportación CSV
     };
 
     return (
